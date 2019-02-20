@@ -1,0 +1,82 @@
+﻿
+
+<!DOCTYPE html>
+
+<html>
+<head
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+#square {
+  height: 50px;
+  width: 50px;
+  background-color: blue;
+}
+#squareCopy {
+  display: inline-flex;
+  height: 150px;
+  width: 150px;
+  border: 1px solid #aaaaaa;
+  
+}
+#circle {
+  height: 50px;
+  width: 50px;
+  background-color: blue;
+  border-radius: 50%;
+}
+#triangle-right {
+	width: 0;
+	height: 0;
+	border-top: 25px solid transparent;
+	border-left: 50px solid blue;
+	border-bottom: 25px solid transparent;
+}
+</style>
+
+<script>
+function dragEnter(ev) {
+  
+    ev.target.style.border = "3px dotted red";
+}
+
+function dragLeave(ev) {
+ 
+    ev.target.style.border = "3px solid green";
+}
+
+
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("css", ev.target.id);
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  var data=ev.dataTransfer.getData("css");
+  /*console.log(data);*/
+  var nodeCopy = document.getElementById(data).cloneNode(true);
+  
+ /* nodeCopy.id = data;*/
+  /*nodeCopy.innerHTML = data; */
+  /*console.log('nodeCopy',nodeCopy);*/
+  ev.target.appendChild(nodeCopy);
+}
+</script>
+</head>
+
+<body>
+<div id="squareCopy" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)"></div>
+	
+<br>
+<div id="square" draggable="true" ondragstart="drag(event)" ondragleave="dragLeave(event)"></div>
+<div id="circle" draggable="true" ondragstart="drag(event)" ondragleave="dragLeave(event)"></div>
+<div id="triangle-right" draggable="true" ondragstart="drag(event)" ondragleave="dragLeave(event)"></div>
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,176 @@
+
+
+<!DOCTYPE html>
+
+<html>
+<head
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style>
+
+#square {
+  height: 50px;
+  width: 50px;
+  background-color: blue;
+}
+#squareCopy {
+  display: inline-flex;
+  min-height: 50px;
+  min-width: 50px;
+  border: 1px solid #aaaaaa;
+  
+}
+
+.borderChange{
+
+border: 2px solid green;
+}
+#circle {
+  height: 50px;
+  width: 50px;
+  background-color: blue;
+  border-radius: 50%;
+}
+#triangle-right {
+	width: 0;
+	height: 0;
+	border-top: 25px solid transparent;
+	border-left: 50px solid blue;
+	border-bottom: 25px solid transparent;
+}
+</style>
+
+<script>
+/*$(document).ready(function(){
+  $("#squareCopy").mouseenter(function(){
+  	var wd=$(this).width()+50;
+    $(this).css("width", wd);
+    $(this).sort(id);
+  });
+});
+
+$(document).ready(function(){
+$(".oringalF").mouseleave(function(){
+  $(this).css("background-color", "yellow");
+}); 
+
+
+});*/
+/*function changeBge(ev){
+ev.style.background-color="yellow";
+
+}
+
+function changeWi(ev){
+
+ev.style.width+=50;
+
+}*/
+
+
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("css", ev.target.id);
+
+ //ev.target.style.background-color="yellow";
+
+  
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  var data=ev.dataTransfer.getData("css");
+  document.getElementById("squareCopy").style.border="10px solid red";
+  /*console.log(data);*/
+  var nodeCopy = document.getElementById(data).cloneNode(true);
+
+  addClassName(nodeCopy,"borderChange");
+
+/*function addClassName(elementN,classN){
+  var elementN,classN;
+  elementN.className="classN";
+}*/
+  /*nodeCopy.className="borderChange";*/
+ /*nodeCopy.id = data;*/
+  /*nodeCopy.innerHTML = data; */
+  /*console.log('nodeCopy',nodeCopy);*/
+  document.getElementById("squareCopy").appendChild(nodeCopy);
+
+  sortsquareCopy();
+  /*var wd=ev.target.style.width;
+  console.log(wd);
+  console.log(wd+1);
+	//ev.target.style.width="wd";*/
+
+  
+	
+}
+
+function addClassName(elementN,classN){
+    
+   return elementN.className=classN;
+}
+function myFunction(value){
+    return value.id;
+  }
+
+function myGetElementById(id){
+ return document.getElementById(id).cloneNode(true);
+
+}
+
+function sortsquareCopy() {
+  var house, unit,unitLowerCase,unitId,unitSortedId,unitSortedElement, unitRemove, unitCreate;
+  house = document.getElementById("squareCopy");
+  unit=house.getElementsByTagName("div");
+  console.log('unit', unit);
+  for (i = 0; i < (unit.length); i++) {
+    
+      }
+
+  /*unitLowerCase=unit.id.map(toLowerCase);*/
+  var unit2 = Array.prototype.slice.call( unit )
+  console.log('unit2', unit2);
+  unitId=unit2.map(myFunction);
+  console.log('unitId', unitId);
+  unitSortedId=unitId.sort();
+  console.log('unitSortedId', unitSortedId);
+  console.log('unitId2', unitId);
+  unitSortedElement=unitSortedId.map(myGetElementById);
+  console.log('unitSortedElement', unitSortedElement);
+  unitRemove=unit2.map(removechild);
+  console.log('unitSortedElement2', unitSortedElement);
+  unitCreate=unitSortedElement.map(appendchild);
+  function removechild(child){
+  console.log('child', child);
+  house.removeChild(child);
+  }
+
+  function appendchild(child){
+  console.log('child', child);
+  house.appendChild(child);
+
+  }
+}
+    
+</script>
+</head>
+
+<body>
+<div id="squareCopy" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="sortsquareCopy()"></div>
+	
+<br>
+<div id="square" draggable="true" ondragstart="drag(event)" ></div>
+<div id="circle" draggable="true" ondragstart="drag(event)"  ></div>
+<div id="triangle-right" draggable="true" ondragstart="drag(event)" ></div>
+
+/*<button onclick="sortsquareCopy()"> Click Me</button>*/
+
+
+</body>
+
+
+</html>

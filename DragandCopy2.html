@@ -1,0 +1,154 @@
+
+
+<!DOCTYPE html>
+
+<html>
+<head
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style>
+
+#square {
+  height: 50px;
+  width: 50px;
+  background-color: blue;
+}
+#squareCopy {
+  display: inline-flex;
+  min-height: 50px;
+  min-width: 50px;
+  border: 1px solid #aaaaaa;
+  
+}
+
+.borderChange{
+
+border: 2px solid green;
+}
+#circle {
+  height: 50px;
+  width: 50px;
+  background-color: blue;
+  border-radius: 50%;
+}
+#triangle-right {
+	width: 0;
+	height: 0;
+	border-top: 25px solid transparent;
+	border-left: 50px solid blue;
+	border-bottom: 25px solid transparent;
+}
+</style>
+
+<script>
+/*$(document).ready(function(){
+  $("#squareCopy").mouseenter(function(){
+  	var wd=$(this).width()+50;
+    $(this).css("width", wd);
+    $(this).sort(id);
+  });
+});
+
+$(document).ready(function(){
+$(".oringalF").mouseleave(function(){
+  $(this).css("background-color", "yellow");
+}); 
+
+
+});*/
+/*function changeBge(ev){
+ev.style.background-color="yellow";
+
+}
+
+function changeWi(ev){
+
+ev.style.width+=50;
+
+}*/
+
+
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("css", ev.target.id);
+
+ //ev.target.style.background-color="yellow";
+
+  
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  var data=ev.dataTransfer.getData("css");
+  document.getElementById("squareCopy").style.border="10px solid red";
+  /*console.log(data);*/
+  var nodeCopy = document.getElementById(data).cloneNode(true);
+ 
+  nodeCopy.className="borderChange";
+ /*nodeCopy.id = data;*/
+  /*nodeCopy.innerHTML = data; */
+  /*console.log('nodeCopy',nodeCopy);*/
+  document.getElementById("squareCopy").appendChild(nodeCopy);
+
+  sortsquareCopy();
+  /*var wd=ev.target.style.width;
+  console.log(wd);
+  console.log(wd+1);
+	//ev.target.style.width="wd";*/
+
+  
+	
+}
+
+function sortsquareCopy() {
+  var house, unit, switching, i, x, y, shouldSwitch;
+  house = document.getElementById("squareCopy");
+
+  switching = true;
+  
+  while (switching) {
+    
+    switching = false;
+    unit=house.getElementsByTagName("div");
+  
+    for (i = 0; i < (unit.length); i++) {
+   
+      shouldSwitch = false;
+     
+      x = unit[i].id;
+      y = unit[i + 1].id;
+      
+      if (x.toLowerCase() > y.toLowerCase()) {
+        
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+     
+      unit[i].parentNode.insertBefore(unit[i + 1], unit[i]);
+      switching = true;
+    }
+  }
+}
+</script>
+</head>
+
+<body>
+<div id="squareCopy" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="sortsquareCopy()"></div>
+	
+<br>
+<div id="square" draggable="true" ondragstart="drag(event)" ></div>
+<div id="circle" draggable="true" ondragstart="drag(event)"  ></div>
+<div id="triangle-right" draggable="true" ondragstart="drag(event)" ></div>
+
+<button onclick="sortsquareCopy()"> Click Me</button>
+
+
+</body>S
+
+
+</html>
