@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Finding HTML Elements by Tag Name</h2>
+
+<div id="main">
+<p id="p">The DOM is very useful.</p>
+<p id="a">This example demonstrates the <b>getElementsByTagName</b> method.</p>
+<p id="p"> very useful.</p>
+<p id="cemo">Hello</p>
+</div>
+
+<p id="demo"></p>
+
+<script>
+var x = document.getElementById("main");
+var y = x.getElementsByTagName("p");
+var s=Array.from(y);
+var d=Array.prototype.slice.call(y);
+var f=d.map(myFunction);
+var m=f.sort();
+var k=m.map(myGetElementById);
+var j=k.map(appendchild);
+document.getElementById("demo").innerHTML = 
+'The first paragraph (index 0) inside "main" is: ' + k;
+function myFunction(value){
+    return value.id;}
+function myGetElementById(id){
+ return document.getElementById(id).cloneNode(true);
+
+}
+function appendchild(child){
+ 
+  x.appendChild(child);
+
+  }  
+</script>
+
+</body>
+</html>

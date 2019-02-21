@@ -118,7 +118,8 @@ function myFunction(value){
   }
 
 function myGetElementById(id){
- return document.getElementById(id).cloneNode(true);
+ return document.getElementById(id);
+// return document.getElementById(id).cloneNode(true);
 
 }
 
@@ -141,7 +142,7 @@ function sortsquareCopy() {
   console.log('unitId2', unitId);
   unitSortedElement=unitSortedId.map(myGetElementById);
   console.log('unitSortedElement', unitSortedElement);
-  unitRemove=unit2.map(removechild);
+  //unitRemove=unit2.map(removechild);
   console.log('unitSortedElement2', unitSortedElement);
   unitCreate=unitSortedElement.map(appendchild);
   function removechild(child){
