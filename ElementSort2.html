@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Finding HTML Elements by Tag Name</h2>
+
+<div id="main">
+<p id="p">p1: The DOM is very useful.</p>
+<p id="a">a: This example demonstrates the <b>getElementsByTagName</b> method.</p>
+<p id="p"> p2: very useful.</p>
+<p id="cemo">c: Hello</p>
+</div>
+
+<p id="demo"></p>
+
+<script>
+var x = document.getElementById("main");
+var y = x.getElementsByTagName("p");
+// // var y = x.childNodes;
+// // var s=Array.from(y);
+// var d=Array.prototype.slice.call(y);
+// var f=d.map(myFunction);
+// var m=f.sort();
+
+// var k=m.map(myGetElementById);
+// var j=k.map(appendchild);
+// m.forEach(function(e) {
+// 	console.log('e', e);
+// 	x.appendChild(e);
+// })
+
+ var childNodes = Array.prototype.slice.call(x.childNodes).sort(sortNodes);
+        childNodes.forEach(function(node) {
+            x.appendChild(node);
+        });
+
+function sortNodes(node0, node1) {
+	return node0.id > node1.id;
+}
+
+// document.getElementById("demo").innerHTML = 
+// 'The first paragraph (index 0) inside "main" is: ' + k;
+
+function myFunction(value){
+    return value.id;}
+function myGetElementById(id){
+ return document.getElementById(id); //.cloneNode(true);
+
+}
+function appendchild(child){
+ 
+  x.appendChild(child);
+
+  }  
+</script>
+
+</body>
+</html>

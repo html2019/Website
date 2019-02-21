@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+<head
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style>
+
+    #square {
+        height: 50px;
+        width: 50px;
+        background-color: blue;
+    }
+
+    #squareCopy {
+        display: inline-flex;
+        min-height: 50px;
+        min-width: 50px;
+        border: 1px solid #aaaaaa;
+
+    }
+
+    .borderChange {
+
+        border: 2px solid green;
+    }
+
+    #circle {
+        height: 50px;
+        width: 50px;
+        background-color: blue;
+        border-radius: 50%;
+    }
+
+    #triangle-right {
+        width: 0;
+        height: 0;
+        border-top: 25px solid transparent;
+        border-left: 50px solid blue;
+        border-bottom: 25px solid transparent;
+    }
+</style>
+
+<script>
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("css", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("css");
+        var parent = document.getElementById("squareCopy");
+        parent.style.border = "10px solid red";
+
+        var nodeCopy = document.getElementById(data).cloneNode(true);
+        parent.appendChild(nodeCopy);
+        addClassName(nodeCopy, "borderChange");
+        // var childNodes = Array.from(parent.childNodes).sort(function(node0, node1) { return sortNodes(node0, node1) });
+        var childNodes = Array.from(parent.childNodes).sort(sortNodes);
+        childNodes.forEach(function(node) {
+            parent.appendChild(node);
+        });
+    }
+    
+    function sortNodes(node0, node1) {
+        return node0.id < node1.id;
+    }
+
+    function addClassName(elementN, classN) {
+        return elementN.className = classN;
+    }
+
+</script>
+</head>
+
+<body>
+<div id="squareCopy" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+<br>
+<div id="square" draggable="true" ondragstart="drag(event)"></div>
+<div id="circle" draggable="true" ondragstart="drag(event)"></div>
+<div id="triangle-right" draggable="true" ondragstart="drag(event)"></div>
+
+
+</body>
+
+
+</html>
