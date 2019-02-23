@@ -1,13 +1,112 @@
     <!DOCTYPE html>
     <html>
 
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+    canvas {
+    border:1px solid black;
+    background-color: lightgrey;
+    }
+    </style>
+</head>
+    <body onload="startGame()">
 
-    <body>
         <div>Time Remaining <span id="time"></span></div>
         
         <button onClick="gameStartfunction ()">Start</button>
+    <script>
+
+        var recPiece, triPiece, cirPiece;
+
+function startGame() {
+    recPiece = new recComponent(55, 55, "red", 10, 10);
+    triPiece = new triComponent(60, 60, "yellow", 400, 50);    
+    cirPiece = new cirComponent(30, "blue", 220, 10);
+    myGameArea.start();
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 680;
+        this.canvas.height = 500;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGameArea, 20);
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function recComponent(width, height, color, x, y) {
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;    
+    this.update = function(){
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+function triComponent(width, height, color, x, y) {
+    this.x1 = x;
+    this.y1=y-height/2;
+    this.x2 = x-width/2;
+    this.y2=y+height/2;
+    this.x3 = x+width/2;
+    this.y3=y+height/2;
+    this.x = x;
+    this.y = y;    
+    this.update = function(){
+        ctx = myGameArea.context;
+        ctx.beginPath();
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(this.x2, this.y2);
+        ctx.lineTo(this.x3, this.y3);
+        ctx.lineTo(this.x1, this.y1);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+    }
+}
+
+function cirComponent(radius, color, x, y) {
+    this.radius = radius;
+    this.x = x;
+    this.y = y;    
+    this.update = function(){
+        ctx = myGameArea.context;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
         
-        <script>
+    }
+}
+
+
+
+
+
+function updateGameArea() {
+    myGameArea.clear();
+    cirPiece.x += 1;
+    cirPiece.y += 1;
+    recPiece.x += 1;    
+    recPiece.y += 1;        
+    triPiece.x += 1;        
+    triPiece.y -= 1;            
+    recPiece.update();
+    cirPiece.update();        
+    triPiece.update();
+}
+
+        
+        
         
         function startTimer(duration, display) {
         var start = Date.now(),
@@ -30,10 +129,7 @@
         timer();
         var t=setInterval(timer, 1000);
         
-        if (diff<=0) {
-    clearInterval(t);
-    }
-
+      
     }
      function gameStartfunction () {
         var oneMinutes = 60 ,
