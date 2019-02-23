@@ -10,11 +10,10 @@
     }
     </style>
 </head>
-    <body onload="startGame()">
+    <body onload="myGameArea.start()" >
 
         <div>Time Remaining <span id="time"></span></div>
-        
-        <button onClick="gameStartfunction ()">Start</button>
+        <button onClick="gameStartfunction (), startGame()">Start</button>
     <script>
 
         var recPiece, triPiece, cirPiece;
@@ -23,7 +22,7 @@ function startGame() {
     recPiece = new recComponent(55, 55, "red", 10, 10);
     triPiece = new triComponent(60, 60, "yellow", 400, 50);    
     cirPiece = new cirComponent(30, "blue", 220, 10);
-    myGameArea.start();
+    
 }
 
 var myGameArea = {
@@ -128,6 +127,7 @@ function updateGameArea() {
       
     }
      function gameStartfunction () {
+        startGame();
         var oneMinutes = 60 ,
             display = document.querySelector('#time');
         startTimer(oneMinutes, display);
