@@ -16,12 +16,13 @@
         <button onClick="gameStartfunction (), startGame()">Start</button>
     <script>
 
-        var recPiece, triPiece, cirPiece;
+        var recPiece, triPiece, cirPiece,container;
 
 function startGame() {
     recPiece = new recComponent(55, 55, "red", 10, 10);
     triPiece = new triComponent(60, 60, "yellow", 400, 50);    
     cirPiece = new cirComponent(30, "blue", 220, 10);
+    container= new drawContainer(340, 250, 30, 15, 70);
     
 }
 
@@ -36,7 +37,7 @@ var myGameArea = {
     },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    },
 }
 
 function recComponent(width, height, color, x, y) {
@@ -83,7 +84,22 @@ function cirComponent(radius, color, x, y) {
     }
 }
 
-
+function drawContainer(x, y, rw, rh, l)
+{
+  ctx = myGameArea.context;
+  ctx.save();
+  ctx.scale(1,  rh/rw);
+  ctx.beginPath();
+  ctx.arc(x, y, rw, 0, 2 * Math.PI);
+  ctx.moveTo((x-rw),y);
+  ctx.lineTo((x-rw),(y+l));
+  ctx.lineTo((x+rw),(y+l));
+  ctx.lineTo((x+rw),(y));
+  ctx.restore();
+  ctx.lineWidth=4;
+  ctx.strokeStyle="orange";
+  ctx.stroke();  
+}
 
 
 

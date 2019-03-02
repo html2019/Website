@@ -16,12 +16,14 @@
         <button onClick="gameStartfunction (), startGame()">Start</button>
     <script>
 
-        var recPiece, triPiece, cirPiece;
+        var recPiece, triPiece, cirPiece, myScore,container;
 
 function startGame() {
     recPiece = new recComponent(55, 55, "red", 10, 10);
     triPiece = new triComponent(60, 60, "yellow", 400, 50);    
     cirPiece = new cirComponent(30, "blue", 220, 10);
+    container= new drawContainer(340, 920, 30, 15, 70);
+    myScore= new scoreBoard("30px", "Consolas", "black", 280, 40, "text");
     
 }
 
@@ -30,6 +32,7 @@ var myGameArea = {
     start : function() {
         this.canvas.width = 680;
         this.canvas.height = 500;
+        this.i=0;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.interval = setInterval(updateGameArea, 20);
@@ -83,24 +86,97 @@ function cirComponent(radius, color, x, y) {
     }
 }
 
+function scoreBoard(width, height, color, x, y, display) {
+    this.display = display;
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;    
+    this.update = function(){
+      
+        ctx = myGameArea.context;
+        ctx.font = this.width + " " + this.height;
+        ctx.fillStyle = color;
+        ctx.fillText(this.display, this.x, this.y);
+    
+    
+    }
+}
 
+function drawContainer(x, y, rw, rh, h) {
+  this.x = x;
+  this.y = y;
+  this.rh = rh;
+  this.rw = rw; 
+  this.h=h;
+  this.update=function(){ 
+  ctx = myGameArea.context;
+  ctx.save();
+  ctx.scale(1,  this.rh/this.rw);
+  ctx.beginPath();
+  ctx.arc(this.x, this.y, this.rw, 0, 2 * Math.PI);
+  ctx.moveTo((this.x-this.rw),this.y);
+  ctx.lineTo((this.x-this.rw),(this.y+this.h));
+  ctx.lineTo((this.x+this.rw),(this.y+this.h));
+  ctx.lineTo((this.x+this.rw),this.y);
+  ctx.restore();
+  ctx.lineWidth=4;
+  ctx.strokeStyle="orange";
+  ctx.stroke(); 
+  } 
+}
 
 
 
 function updateGameArea() {
     myGameArea.clear();
-    cirPiece.x += 1;
-    cirPiece.y += 1;
-    recPiece.x += 1;    
-    recPiece.y += 1;        
-    triPiece.x -= 1;        
-    triPiece.y += 1;            
+    cirPiece.x += 0;
+    cirPiece.y += 0;
+    recPiece.x += 0;    
+    recPiece.y += 0;        
+    triPiece.x -= 0;        
+    triPiece.y += 0;
+    container.x+=0;
+    container.y+=0; 
+    if (triPiece.x>310 && triPiece.x<370&&triPiece.y>905&&triPiece.y<990)
+            {this.i+=1;
+                        };
+    myScore.text="Score:" + myGameArea.i;         
     recPiece.update();
     cirPiece.update();        
     triPiece.update();
+    container.update();
+    scoreBoard.update();
 }
 
-        
+ var draggable = false;
+  function myMove(e){
+ if (draggable){
+  triPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
+  triPiece.y = e.pageY - myGameArea.canvas.offsetTop;
+  triPiece.update();
+ }
+}
+
+function myDown(e){
+ if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
+ myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
+ e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
+ // triPiece.x = e.pageX - canvas.offsetLeft;
+  //triPiece.y = e.pageY - canvas.offsetTop;
+  draggable = true;
+  myGameArea.canvas.onmousemove = myMove;
+ }
+}
+
+function myUp(){
+ draggable = false;
+ myGameArea.canvas.onmousemove = null;
+}
+
+
+myGameArea.canvas.onmousedown = myDown;
+myGameArea.canvas.onmouseup = myUp;        
         
         
         function startTimer(duration, display) {
