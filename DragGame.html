@@ -13,17 +13,17 @@
     <body onload="myGameArea.start()" >
 
         <div>Time Remaining <span id="time"></span></div>
-        <button onClick="gameStartfunction (), startGame()">Start</button>
+        <button onClick="gameStartfunction ()">Start</button>
     <script>
 
-        var recPiece, triPiece, cirPiece, myScore,container;
-
+        var recPiece, triPiece, cirPiece, myScoreBoard,container;
+        
 function startGame() {
     recPiece = new recComponent(55, 55, "red", 10, 10);
     triPiece = new triComponent(60, 60, "yellow", 400, 50);    
     cirPiece = new cirComponent(30, "blue", 220, 10);
     container= new drawContainer(340, 920, 30, 15, 70);
-    myScore= new scoreBoard("30px", "Consolas", "black", 280, 40, "text");
+    myScoreBoard= new scoreBoard("30px", "Consolas", "black", 280, 40, "Score:  ");
     
 }
 
@@ -32,10 +32,10 @@ var myGameArea = {
     start : function() {
         this.canvas.width = 680;
         this.canvas.height = 500;
-        this.i=0;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateGameArea, 20);
+        //this.interval = setInterval(updateGameArea, 500);
+        updateGameArea();
     },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -91,13 +91,18 @@ function scoreBoard(width, height, color, x, y, display) {
     this.width = width;
     this.height = height;
     this.x = x;
-    this.y = y;    
+    this.y = y;
+    this.score=0;    
     this.update = function(){
       
         ctx = myGameArea.context;
         ctx.font = this.width + " " + this.height;
         ctx.fillStyle = color;
-        ctx.fillText(this.display, this.x, this.y);
+        console.log("this.display1", this.display);
+        console.log("this.score1", this.score);
+        ctx.fillText(this.display+this.score, this.x, this.y);
+        console.log("this.display2", this.display);
+        console.log("this.score2", this.score);
     
     
     }
@@ -130,6 +135,7 @@ function drawContainer(x, y, rw, rh, h) {
 
 function updateGameArea() {
     myGameArea.clear();
+    startGame();
     cirPiece.x += 0;
     cirPiece.y += 0;
     recPiece.x += 0;    
@@ -137,16 +143,12 @@ function updateGameArea() {
     triPiece.x -= 0;        
     triPiece.y += 0;
     container.x+=0;
-    container.y+=0; 
-    if (triPiece.x>310 && triPiece.x<370&&triPiece.y>905&&triPiece.y<990)
-            {this.i+=1;
-                        };
-    myScore.text="Score:" + myGameArea.i;         
+    container.y+=0;        
     recPiece.update();
     cirPiece.update();        
     triPiece.update();
     container.update();
-    scoreBoard.update();
+    myScoreBoard.update();
 }
 
  var draggable = false;
@@ -159,17 +161,26 @@ function updateGameArea() {
 }
 
 function myDown(e){
- if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
- myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
- e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
+ 
  // triPiece.x = e.pageX - canvas.offsetLeft;
   //triPiece.y = e.pageY - canvas.offsetTop;
   draggable = true;
   myGameArea.canvas.onmousemove = myMove;
- }
+ 
 }
 
-function myUp(){
+function myUp(e){
+
+if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
+ myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
+ e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
+console.log("myScoreBoard ", myScoreBoard);
+console.log("myScoreBoard.score ", myScoreBoard.score);
+ myScoreBoard.score+=1;
+console.log("myScoreBoard1 ", myScoreBoard);
+console.log("myScoreBoard.score1 ", myScoreBoard.score);
+myScoreBoard.update();
+ }
  draggable = false;
  myGameArea.canvas.onmousemove = null;
 }
