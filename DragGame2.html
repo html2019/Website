@@ -17,7 +17,7 @@
     <script>
 
         // global scope
-        var recPiece, triPiece, cirPiece, myScore,container;
+        var recPiece, triPiece, cirPiece, myScoreBoard,container;
 
 function startGame() {
     console.log("enter startGame ...");
@@ -29,11 +29,10 @@ function startGame() {
     triPiece = new triComponent(60, 60, "yellow", 400, 50);    
     cirPiece = new cirComponent(30, "blue", 220, 10);
     container= new drawContainer(340, 920, 30, 15, 70);
-    myScore= new scoreBoard("30px", "Consolas", "black", 280, 40, "text");
+    // instance
+    myScoreBoard = new scoreBoard("30px", "Consolas", "black", 280, 40, "text");
     console.log("exit from startGame ...");
-
-    console.log("myScore", myScore);
-
+    console.log("myScore", myScoreBoard);
 }
 
 var myGameArea = {
@@ -101,15 +100,13 @@ function scoreBoard(width, height, color, x, y, display) {
     this.width = width;
     this.height = height;
     this.x = x;
-    this.y = y;    
-    this.update = function(){
-      
+    this.y = y;
+    this.score = 0;
+    this.update = function() {
         ctx = myGameArea.context;
         ctx.font = this.width + " " + this.height;
         ctx.fillStyle = color;
         ctx.fillText(this.display, this.x, this.y);
-    
-    
     }
 }
 
@@ -156,12 +153,12 @@ function updateGameArea() {
     if (triPiece.x>310 && triPiece.x<370&&triPiece.y>905&&triPiece.y<990)
             {this.i+=1;
                         };
-    myScore.text="Score:" + myGameArea.i;         
+    myScoreBoard.text="Score:" + myGameArea.i;
     recPiece.update();
     cirPiece.update();
     triPiece.update();
     container.update();
-    myScore.update();
+    myScoreBoard.update();
 }
 
  var draggable = false;
@@ -187,6 +184,8 @@ function myDown(e){
 function myUp(){
       console.log("give a score now")
  draggable = false;
+
+      myScoreBoard.score = myScoreBoard.score + 1;
 
  myGameArea.canvas.onmousemove = null;
 }

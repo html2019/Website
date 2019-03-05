@@ -23,7 +23,9 @@ function startGame() {
     triPiece = new triComponent(60, 60, "yellow", 400, 50);    
     cirPiece = new cirComponent(30, "blue", 220, 10);
     container= new drawContainer(340, 920, 30, 15, 70);
-    myScoreBoard= new scoreBoard("30px", "Consolas", "black", 280, 40, "Score:  ");
+    // function scoreBoard(width, height, color, x, y, display) {
+    myScoreBoard= new scoreBoard(30, 40, "black", 280, 40, "Score:  ");
+        // myScoreBoard= new scoreBoard("Consolas", "black", 280, 40, "Score:  ");
     
 }
 
@@ -68,7 +70,6 @@ function triComponent(width, height, color, x, y) {
         ctx.lineTo(this.x, (this.y-this.height/2));
         ctx.fillStyle = color;
         ctx.fill();
-
     }
 }
 
@@ -86,25 +87,28 @@ function cirComponent(radius, color, x, y) {
     }
 }
 
-function scoreBoard(width, height, color, x, y, display) {
-    this.display = display;
+function BaseComponent(width, height, color, x, y) {
     this.width = width;
     this.height = height;
     this.x = x;
     this.y = y;
-    this.score=0;    
-    this.update = function(){
-      
+    this.update = function(creator){
         ctx = myGameArea.context;
-        ctx.font = this.width + " " + this.height;
+        ctx.beginPath();
+        creator();
         ctx.fillStyle = color;
-        console.log("this.display1", this.display);
-        console.log("this.score1", this.score);
-        ctx.fillText(this.display+this.score, this.x, this.y);
-        console.log("this.display2", this.display);
-        console.log("this.score2", this.score);
-    
-    
+        ctx.fill();
+    }
+}
+
+function scoreBoard(width, height, color, x, y, display) {
+    this.score=0;
+    ctx = myGameArea.context;
+    this.update = function(){
+        var txt = display + this.score;
+        ctx.fillStyle = color;
+        ctx.clearRect(x,y-5, ctx.measureText(txt).width, height);
+        ctx.fillText(txt, x, y);
     }
 }
 
