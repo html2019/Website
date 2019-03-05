@@ -24,7 +24,7 @@ function startGame() {
     cirPiece = new cirComponent(30, "blue", 220, 10);
     container= new drawContainer(340, 920, 30, 15, 70);
     // function scoreBoard(width, height, color, x, y, display) {
-    myScoreBoard= new scoreBoard(30, 40, "black", 280, 40, "Score:  ");
+    myScoreBoard= new ScoreBoard(280, 40);
         // myScoreBoard= new scoreBoard("Consolas", "black", 280, 40, "Score:  ");
     
 }
@@ -87,27 +87,17 @@ function cirComponent(radius, color, x, y) {
     }
 }
 
-function BaseComponent(width, height, color, x, y) {
-    this.width = width;
-    this.height = height;
-    this.x = x;
-    this.y = y;
-    this.update = function(creator){
-        ctx = myGameArea.context;
-        ctx.beginPath();
-        creator();
-        ctx.fillStyle = color;
-        ctx.fill();
-    }
-}
-
-function scoreBoard(width, height, color, x, y, display) {
+function ScoreBoard(x, y) {
     this.score=0;
     ctx = myGameArea.context;
+    var fontHeight = 20;
+    ctx.font = fontHeight + "px Arial";
+    var color = "black";
+    var display = "Score ";
     this.update = function(){
         var txt = display + this.score;
         ctx.fillStyle = color;
-        ctx.clearRect(x,y-5, ctx.measureText(txt).width, height);
+        ctx.clearRect(x,y-fontHeight, ctx.measureText(txt).width, fontHeight);
         ctx.fillText(txt, x, y);
     }
 }
