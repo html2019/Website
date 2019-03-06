@@ -19,13 +19,11 @@
     var recPiece, triPiece, cirPiece, myScoreBoard,container;
 
     function startGame() {
-        recPiece = new recComponent(55, 55, "red", 10, 10);
+        recPiece = new recComponent(55, 55, "red", 10, 20);
         triPiece = new triComponent(60, 60, "yellow", 400, 50);
         cirPiece = new cirComponent(30, "blue", 220, 50);
-        container= new drawContainer(340, 920, 60, 30, 70);
+        container= new drawContainer(340, 420, 30, 15, 70);
         myScoreBoard= new ScoreBoard(280, 40);
-        // myScoreBoard= new scoreBoard("Consolas", "black", 280, 40, "Score:  ");
-
     }
 
     var myGameArea = {
@@ -35,7 +33,6 @@
             this.canvas.height = 500;
             this.context = this.canvas.getContext("2d");
             document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-            //this.interval = setInterval(updateGameArea, 500);
             updateGameArea();
         },
         clear : function() {
@@ -93,10 +90,12 @@
     function drawContainer(x, y, rw, rh, h) {
         this.update=function(){
             ctx = myGameArea.context;
-            ctx.save();
-            ctx.scale(1,  rh/rw);
+            // ctx.save();
+            // ctx.scale(1,  rw/rh);
             ctx.beginPath();
-            ctx.arc(x, y, rw, 0, 2 * Math.PI);
+            ctx.ellipse(x, y, rw, rh, Math.PI, 0, 2 * Math.PI);
+
+            // ctx.arc(x, y, rw, 0, 2 * Math.PI);
             ctx.moveTo((x-rw),y);
             ctx.lineTo((x-rw),(y+h));
             ctx.lineTo((x+rw),(y+h));
@@ -111,14 +110,6 @@
     function updateGameArea() {
         myGameArea.clear();
         startGame();
-        cirPiece.x += 0;
-        cirPiece.y += 0;
-        recPiece.x += 0;
-        recPiece.y += 0;
-        triPiece.x -= 0;
-        triPiece.y += 0;
-        container.x+=0;
-        container.y+=0;
         recPiece.update();
         cirPiece.update();
         triPiece.update();
@@ -129,31 +120,36 @@
     var draggable = false;
     function myMove(e){
         if (draggable){
-            console.log("e.pageX " + e.pageX);
-            console.log("e.pageY " + e.pageY);
-            console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
-            console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
-            triPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
-            triPiece.y = e.pageY - myGameArea.canvas.offsetTop;
-            console.log("triPiece.pageX " + triPiece.x);
-            console.log("triPiece.pageY " + triPiece.y);
+            // console.log("e.pageX ", e.pageX);
+            // console.log("e.pageY ", e.pageY);
+            // console.log("e.clientX ", e.clientX);
+            // console.log("e.clientY ", e.clientY);
+            // console.log("e.screenX ", e.screenX);
+            // console.log("e.screenY ", e.screenY);
+            // console.log("myGameArea.canvas.offsetLeft ", myGameArea.canvas.offsetLeft);
+            // console.log("myGameArea.canvas.offsetTop ", myGameArea.canvas.offsetTop);
+            triPiece.x = e.clientX;
+            triPiece.y = e.clientY;
             triPiece.update();
         }
     }
 
-    function myDown(e){
-
-        // triPiece.x = e.pageX - canvas.offsetLeft;
-        //triPiece.y = e.pageY - canvas.offsetTop;
+    function dragDown(e){
         draggable = true;
         myGameArea.canvas.onmousemove = myMove;
 
     }
 
-    function myUp(e){
-        if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
-            myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
-            e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
+    function scoreUp(e){
+        // if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
+        //     myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
+        //     e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
+        if (e.clientX > 340 && e.clientX < 400 && e.clientY > 405 && e.clientY < 490){
+
+            console.log("e.clientX ", e.clientX);
+            console.log("e.clientY ", e.clientY);
+            console.log("e.pageX ", e.pageX);
+            console.log("e.pageY ", e.pageY);
             console.log("myScoreBoard ", myScoreBoard);
             console.log("myScoreBoard.score ", myScoreBoard.score);
             myScoreBoard.score+=1;
@@ -166,8 +162,8 @@
     }
 
 
-    myGameArea.canvas.onmousedown = myDown;
-    myGameArea.canvas.onmouseup = myUp;
+    myGameArea.canvas.onmousedown = dragDown;
+    myGameArea.canvas.onmouseup = scoreUp;
 
     function startTimer(duration, display) {
         var start = Date.now(),
