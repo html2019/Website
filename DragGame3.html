@@ -17,11 +17,22 @@
 <script>
 
     var recPiece, triPiece, cirPiece, myScoreBoard,container;
-
+    var int;
     function startGame() {
-        recPiece = new recComponent(55, 55, "red", 10, 10);
+    	int=Math.random();
+    	if(0<int&&int<0.333){
+        recPiece = new recComponent(55, 55, "red", 10, 10);}
+        else if(0.333<=int&&int<0.666){
+        triPiece = new triComponent(60, 60, "yellow", 400, 50);}
+        else{
+        cirPiece = new cirComponent(30, "blue", 220, 50);};
+
+        
+        /*recPiece = new recComponent(55, 55, "red", 10, 10);
+       
         triPiece = new triComponent(60, 60, "yellow", 400, 50);
-        cirPiece = new cirComponent(30, "blue", 220, 50);
+       
+        cirPiece = new cirComponent(30, "blue", 220, 50);*/
         container= new drawContainer(340, 920, 60, 30, 70);
         myScoreBoard= new ScoreBoard(280, 40);
         // myScoreBoard= new scoreBoard("Consolas", "black", 280, 40, "Score:  ");
@@ -35,8 +46,8 @@
             this.canvas.height = 500;
             this.context = this.canvas.getContext("2d");
             document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-            //this.interval = setInterval(updateGameArea, 500);
-            updateGameArea();
+            this.interval = setInterval(updateGameArea, 1000);
+            //updateGameArea();
         },
         clear : function() {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -111,22 +122,36 @@
     function updateGameArea() {
         myGameArea.clear();
         startGame();
-        cirPiece.x += 0;
-        cirPiece.y += 0;
+        
+    	if(0<int&&int<0.333){
         recPiece.x += 0;
-        recPiece.y += 0;
+        recPiece.y += 0;}
+        else if(0.333<=int&&int<0.666){
         triPiece.x -= 0;
-        triPiece.y += 0;
+        triPiece.y += 0;}
+        else{
+        cirPiece.x += 0;
+        cirPiece.y += 0;};
+        //cirPiece.x += 0;
+        //cirPiece.y += 0;
+        //recPiece.x += 0;
+        //recPiece.y += 0;
+        //triPiece.x -= 0;
+        //triPiece.y += 0;
         container.x+=0;
         container.y+=0;
-        recPiece.update();
-        cirPiece.update();
-        triPiece.update();
+        if(0<int&&int<0.333){
+        recPiece.update();}
+        else if(0.333<=int&&int<0.666){
+        triPiece.update();}
+        else{
+        cirPiece.update();}
         container.update();
         myScoreBoard.update();
     }
 
     var draggable = false;
+
     function myMove(e){
         if (draggable){
             console.log("e.pageX " + e.pageX);
@@ -135,16 +160,28 @@
             console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
             triPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
             triPiece.y = e.pageY - myGameArea.canvas.offsetTop;
+
+           // triPiece.x = e.pageX - canvas.offsetLeft;
+           // triPiece.y = e.pageY - canvas.offsetTop;
             console.log("triPiece.pageX " + triPiece.x);
             console.log("triPiece.pageY " + triPiece.y);
             triPiece.update();
         }
+
+       
     }
 
     function myDown(e){
+		if (e.pageX < triPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 30 +
+            myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 30 + myGameArea.canvas.offsetTop &&
+            e.pageY > triPiece.y -30 + myGameArea.canvas.offsetTop){
+            
+        
+         triPiece.x = e.pageX - canvas.offsetLeft;
+        triPiece.y = e.pageY - canvas.offsetTop;
+    }
 
-        // triPiece.x = e.pageX - canvas.offsetLeft;
-        //triPiece.y = e.pageY - canvas.offsetTop;
+    
         draggable = true;
         myGameArea.canvas.onmousemove = myMove;
 
@@ -161,9 +198,119 @@
             console.log("myScoreBoard.score1 ", myScoreBoard.score);
             myScoreBoard.update();
         }
+
+        
         draggable = false;
         myGameArea.canvas.onmousemove = null;
     }
+
+
+   /* function myMove(e){
+        if (draggable&&0.333<=int&&int<0.666){
+            console.log("e.pageX " + e.pageX);
+            console.log("e.pageY " + e.pageY);
+            console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
+            console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
+            triPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
+            triPiece.y = e.pageY - myGameArea.canvas.offsetTop;
+            console.log("triPiece.pageX " + triPiece.x);
+            console.log("triPiece.pageY " + triPiece.y);
+            triPiece.update();
+        }
+
+        else if (draggable&&0<int&&int<0.333){
+            console.log("e.pageX " + e.pageX);
+            console.log("e.pageY " + e.pageY);
+            console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
+            console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
+            recPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
+            recPiece.y = e.pageY - myGameArea.canvas.offsetTop;
+            console.log("triPiece.pageX " + triPiece.x);
+            console.log("triPiece.pageY " + triPiece.y);
+            recPiece.update();
+        }
+
+        else (draggable&&int=>0.666&&int<1){
+            console.log("e.pageX " + e.pageX);
+            console.log("e.pageY " + e.pageY);
+            console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
+            console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
+            cirPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
+            cirPiece.y = e.pageY - myGameArea.canvas.offsetTop;
+            console.log("triPiece.pageX " + triPiece.x);
+            console.log("triPiece.pageY " + triPiece.y);
+            cirPiece.update();
+        }
+    }
+
+    function myDown(e){
+		if (0.333<=int&&int<0.666&& e.pageX < triPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 30 +
+            myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 30 + myGameArea.canvas.offsetTop &&
+            e.pageY > triPiece.y -30 + myGameArea.canvas.offsetTop){
+            
+        
+         triPiece.x = e.pageX - canvas.offsetLeft;
+        triPiece.y = e.pageY - canvas.offsetTop;
+    }
+
+    else if (0<int&&int<0.333&&e.pageX < recPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > recPiece.x - 30 +
+            myGameArea.canvas.offsetLeft && e.pageY < recPiece.y + 30 + myGameArea.canvas.offsetTop &&
+            e.pageY > recPiece.y -30 + myGameArea.canvas.offsetTop){
+            
+        
+         recPiece.x = e.pageX - canvas.offsetLeft;
+        recPiece.y = e.pageY - canvas.offsetTop;
+    }
+
+    else (e.pageX < cirPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > cirPiece.x - 30 +
+            myGameArea.canvas.offsetLeft && e.pageY < cirPiece.y + 30 + myGameArea.canvas.offsetTop &&
+            e.pageY > cirPiece.y -30 + myGameArea.canvas.offsetTop){
+            
+        
+         cirPiece.x = e.pageX - canvas.offsetLeft;
+        cirPiece.y = e.pageY - canvas.offsetTop;
+    }
+        draggable = true;
+        myGameArea.canvas.onmousemove = myMove;
+
+    }
+
+    function myUp(e){
+        if (0.333<=int&&int<0.666&&e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
+            myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
+            e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
+            console.log("myScoreBoard ", myScoreBoard);
+            console.log("myScoreBoard.score ", myScoreBoard.score);
+            myScoreBoard.score+=1;
+            console.log("myScoreBoard1 ", myScoreBoard);
+            console.log("myScoreBoard.score1 ", myScoreBoard.score);
+            myScoreBoard.update();
+        }
+
+        else if (0<int&&int<0.333&&e.pageX < recPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > recPiece.x - 40 +
+            myGameArea.canvas.offsetLeft && e.pageY < recPiece.y + 40 + myGameArea.canvas.offsetTop &&
+            e.pageY > recPiece.y -40 + myGameArea.canvas.offsetTop){
+            console.log("myScoreBoard ", myScoreBoard);
+            console.log("myScoreBoard.score ", myScoreBoard.score);
+            myScoreBoard.score+=1;
+            console.log("myScoreBoard1 ", myScoreBoard);
+            console.log("myScoreBoard.score1 ", myScoreBoard.score);
+            myScoreBoard.update();
+        }
+
+        else (e.pageX < cirPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > cirPiece.x - 40 +
+            myGameArea.canvas.offsetLeft && e.pageY < cirPiece.y + 40 + myGameArea.canvas.offsetTop &&
+            e.pageY > cirPiece.y -40 + myGameArea.canvas.offsetTop){
+            console.log("myScoreBoard ", myScoreBoard);
+            console.log("myScoreBoard.score ", myScoreBoard.score);
+            myScoreBoard.score+=1;
+            console.log("myScoreBoard1 ", myScoreBoard);
+            console.log("myScoreBoard.score1 ", myScoreBoard.score);
+            myScoreBoard.update();
+        }
+        draggable = false;
+        myGameArea.canvas.onmousemove = null;
+    }*/
 
 
     myGameArea.canvas.onmousedown = myDown;
@@ -192,7 +339,7 @@
     }
 
     function gameStartfunction () {
-        startGame();
+       // startGame();
         var oneMinutes = 60 ,
             display = document.querySelector('#time');
         startTimer(oneMinutes, display);
