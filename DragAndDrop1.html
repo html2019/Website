@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        canvas {
+            border: 1px solid black;
+            background-color: lightgrey;
+        }
+    </style>
+</head>
+<body onload="myGameArea.start()">
+<!--<div>Time Remaining <span id="time"></span></div>-->
+<!--<button onClick="gameStartfunction ()">Start</button>-->
+<script>
+
+    var recPiece, triPiece, cirPiece, myScoreBoard, container;
+    var dragging = false;
+
+    function startGame() {
+        recPiece = new Rectangle();
+        recPiece.update(10, 20);
+        triPiece = new Triangle();
+        triPiece.update(400, 50);
+        cirPiece = new Circle();
+        cirPiece.update(220, 50);
+        container = new Container(240, 390, 200, 100);
+        myScoreBoard = new ScoreBoard(280, 40);
+    }
+
+    var myGameArea = {
+        canvas: document.createElement("canvas"),
+        start: function () {
+            this.canvas.width = 680;
+            this.canvas.height = 500;
+            this.context = this.canvas.getContext("2d");
+            document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+            var BB = this.canvas.getBoundingClientRect();
+            this.offsetX = BB.left;
+            this.offsetY = BB.top;
+            this.WIDTH = this.canvas.width;
+            this.HEIGHT = this.canvas.height;
+            this.draggable = false;
+            this.startX;
+            this.startY;
+            updateGameArea();
+        },
+        clear: function () {
+            //this.context.clearRect(0, 0, 680, 500);
+        }
+    }
+
+    function Rectangle(x, y) {
+        ctx = myGameArea.context;
+        var width = 55;
+        var height = 55;
+        var color = "red";
+        this.x = -1;
+        this.y = -1;
+        this.update = function (x, y) {
+            if (this.x > 0) {
+                // add code to clear this shape
+                ctx.clearRect(this.x, this.y, width, height);
+            }
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, width, height);
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    function Triangle() {
+        ctx = myGameArea.context;
+        var width = 60;
+        var height = 60;
+        var color = "yellow";
+        this.x = -1;
+        this.y = -1;
+        this.update = function (x, y) {
+            console.log("triComponent update");
+            console.info("x", x)
+            console.info("y", y)
+
+            if (this.x > 0) {
+                // add code to clear this shape
+                ctx.clearRect(this.x - width / 2, this.y - height / 2, width, height);
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(x, (y - height / 2));
+            ctx.lineTo((x - width / 2), (y + height / 2));
+            ctx.lineTo((x + width / 2), (y + height / 2));
+            ctx.lineTo(x, (y - height / 2));
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    function Circle(x, y) {
+        ctx = myGameArea.context;
+        var radius = 30;
+        var color = "blue";
+        this.x = -1;
+        this.y = -1;
+        this.update = function (x, y) {
+            if (this.x > 0) {
+                // add code to clear this shape
+                ctx.clearRect(this.x - radius, this.y - radius, radius * 2, radius * 2);
+            }
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    function ScoreBoard(x, y) {
+        this.score = 0;
+        ctx = myGameArea.context;
+        var fontHeight = 20;
+        ctx.font = fontHeight + "px Arial";
+        var color = "black";
+        var display = "Score ";
+        this.update = function () {
+            var txt = display + this.score;
+            ctx.fillStyle = color;
+            ctx.clearRect(x, y - fontHeight, ctx.measureText(txt).width, fontHeight);
+            ctx.fillText(txt, x, y);
+        }
+    }
+
+    // function ContainerDimension(x, y, w, h){
+    //     this.x = x;
+    //     this.y = y;
+    //     this.w = w;
+    //     this.h = h;
+    //
+    //
+    // }
+
+
+    function Container(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.update = function () {
+            ctx = myGameArea.context;
+            ctx.beginPath();
+            // ctx.ellipse(x, y, rw, rh, Math.PI, 0, 2 * Math.PI);
+            ctx.rect(x, y, w, h);
+            // ctx.moveTo((x - rw), y);
+            // ctx.lineTo((x - rw), (y + h));
+            // ctx.lineTo((x + rw), (y + h));
+            // ctx.lineTo((x + rw), y);
+            // ctx.restore();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "orange";
+            ctx.stroke();
+        }
+    }
+
+    function updateGameArea() {
+        myGameArea.clear();
+        startGame();
+        // recPiece.update();
+        // // triPiece.update();
+        // cirPiece.update();
+        container.update();
+        myScoreBoard.update();
+    }
+
+    // var shapes=[];
+    // shapes.push({x:10,y:20,width:55,height:55,fill:"red",isDragging:false});
+    // shapes.push({x:220,y:50,r:30,fill:"#blue",isDragging:false});
+    // shapes.push({x:400,y:50,width:60,h:60,fill:"yellow",isDragging:false});
+
+    // listen for mouse events
+    myGameArea.canvas.onmousedown = myDown;
+    myGameArea.canvas.onmouseup = myUp;
+    myGameArea.canvas.onmousemove = myMove;
+
+    // draw();
+    //
+    // function draw() {
+    //     // myGameArea.clear();
+    //     // redraw each shape in the shapes[] array
+    //     // for(var i = 0; i < shapes.length; i++){
+    //     // decide if the shape is a rect or circle
+    //     // (it's a rect if it has a width property)
+    //     // if(shapes[i].height){
+    //     //     Rectangle(shapes[i]);
+    //     // }
+    //     // else if (shapes[i].r){
+    //     //     Circle(shapes[i]);
+    //     // }
+    //     // else {
+    //     //     triComponent(shapes[i]);
+    //     // };
+    //     // }
+    // }
+
+    function myDown(e) {
+        dragging = true;
+        e.preventDefault();
+        e.stopPropagation();
+        // get the current mouse position
+        // var mx = parseInt(e.clientX - this.offsetX);
+        // var my = parseInt(e.clientY - this.offsetY);
+
+        var mx = parseInt(e.clientX - this.offsetX);
+        var my = parseInt(e.clientY - this.offsetY);
+
+        // test each shape to see if mouse is inside
+        // this.draggable = true;
+        // for(var i = 0;i < shapes.length;i++){
+        //     var s = shapes[i];
+        //     // decide if the shape is a rect or circle
+        //     if(s.width){
+        //         // test if the mouse is inside this rect
+        //         if(mx>s.x && mx<s.x+s.width && my>s.y && my<s.y+s.height){
+        //             // if yes, set that rects isDragging=true
+        //             this.draggable = true;
+        //             s.isDragging=true;
+        //         }
+        //     }else{
+        //         var dx=s.x-mx;
+        //         var dy=s.y-my;
+        //         // test if the mouse is inside this circle
+        //         if(dx*dx+dy*dy<s.r*s.r){
+        //             this.draggable = true;
+        //             s.isDragging = true;
+        //         }
+        //     }
+        // }
+        // save the current mouse position
+        this.startX = mx;
+        this.startY = my;
+    }
+
+    function myUp(e) {
+        // tell the browser we're handling this mouse event
+        e.preventDefault();
+        e.stopPropagation();
+        // var dropContainer = new Container(240, 390, 200, 100);
+        console.log("container.x", container.x);
+        if (e.clientX > container.x && e.clientX < container.x + container.w && e.clientY > container.y && e.clientY < container.y + container.h) {
+        // if (e.clientX > 240 && e.clientX < 440 && e.clientY > 390 && e.clientY < 490) {
+
+            myScoreBoard.score += 1;
+            myScoreBoard.update();
+        }
+        // clear all the dragging flags
+        // this.draggable = false;
+        // for(var i = 0;i < shapes.length; i++){
+        //     shapes[i].isDragging = false;
+        // }
+        dragging = false;
+    }
+
+    function myMove(e) {
+        if (dragging) {
+            console.log("myMove");
+            e.preventDefault();
+            e.stopPropagation();
+            console.info("e.clientX", e.clientX)
+            console.info("this.offsetX", this.offsetX)
+
+            // var mx = parseInt(e.clientX - this.offsetX);
+            // var my = parseInt(e.clientY - this.offsetY);
+
+            var mx = parseInt(e.clientX);
+            var my = parseInt(e.clientY);
+
+            var dx = mx - this.startX;
+            var dy = my - this.startY;
+
+            console.info("mx", mx)
+            console.info("my", my)
+            cirPiece.update(mx, my);
+            triPiece.update(mx, my);
+            recPiece.update(mx, my);
+            // || cirPiece.update(mx, my) || triPiece.update(mx, my);
+
+
+            // move each rect that isDragging
+            // by the distance the mouse has moved
+            // since the last mousemove
+            // for (var i = 0; i < shapes.length; i++) {
+            //     var s = shapes[i];
+            //     if (s.isDragging) {
+            //         s.x += dx;
+            //         s.y += dy;
+            //     }
+            // }
+            // redraw the scene with the new rect positions
+            // draw();
+            // reset the starting mouse position for the next mousemove
+            this.startX = mx;
+            this.startY = my;
+        }
+    }
+
+    // function startTimer(duration, display) {
+    //     var start = Date.now(),
+    //         diff,
+    //         minutes,
+    //         seconds;
+    //     function timer() {
+    //         diff = duration - (((Date.now() - start) / 1000) | 0);
+    //         minutes = parseInt(diff / 60);
+    //         seconds= (diff % 60) | 0;
+    //
+    //         minutes = minutes < 10 ? "0" + minutes : minutes;
+    //         seconds = seconds < 10 ? "0" + seconds : seconds;
+    //
+    //         display.textContent = minutes + ":" + seconds;
+    //         if (diff<=0) {
+    //             clearInterval(t);
+    //         }
+    //     }
+    //     timer();
+    //     var t=setInterval(timer, 1000);
+    // }
+    //
+    // function gameStartfunction () {
+    //     startGame();
+    //     var oneMinutes = 60 ,
+    //         display = document.querySelector('#time');
+    //     startTimer(oneMinutes, display);
+    // }
+</script>
+</body>
+</html>
