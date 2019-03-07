@@ -15,18 +15,28 @@
 <!--<button onClick="gameStartfunction ()">Start</button>-->
 <script>
 
-    var recPiece, triPiece, cirPiece, myScoreBoard, container;
+    var recPiece, triPiece, cirPiece, recPiece1, triPiece1, cirPiece1, recScoreBoard, triScoreBoard, cirScoreBoard, recContainer, cirContainer, triContainer;
     var dragging = false;
 
     function startGame() {
         recPiece = new Rectangle();
-        recPiece.update(10, 20);
+        recPiece.update(90, 20);
+        recPiece1 = new Rectangle();
+        recPiece1.update(60, 420);
         triPiece = new Triangle();
-        triPiece.update(400, 50);
+        triPiece.update(560, 50);
+        triPiece1 = new Triangle();
+        triPiece1.update(530, 450);
         cirPiece = new Circle();
-        cirPiece.update(220, 50);
-        container = new Container(240, 390, 200, 100);
-        myScoreBoard = new ScoreBoard(280, 40);
+        cirPiece.update(350, 50);
+        cirPiece1 = new Circle();
+        cirPiece1.update(320, 450);
+        recContainer = new Container(20, 310, 200, 100);
+        cirContainer = new Container(240, 310, 200, 100);
+        triContainer = new Container(460, 310, 200, 100);
+        recScoreBoard = new ScoreBoard(140, 450);
+        triScoreBoard = new ScoreBoard(580, 450);
+        cirScoreBoard = new ScoreBoard(370, 450);
     }
 
     var myGameArea = {
@@ -37,8 +47,8 @@
             this.context = this.canvas.getContext("2d");
             document.body.insertBefore(this.canvas, document.body.childNodes[0]);
             var BB = this.canvas.getBoundingClientRect();
-            this.offsetX = BB.left;
-            this.offsetY = BB.top;
+            offsetX = BB.left;
+            offsetY = BB.top;
             this.WIDTH = this.canvas.width;
             this.HEIGHT = this.canvas.height;
             this.draggable = false;
@@ -53,8 +63,8 @@
 
     function Rectangle(x, y) {
         ctx = myGameArea.context;
-        var width = 55;
-        var height = 55;
+        var width = 60;
+        var height = 60;
         var color = "red";
         this.x = -1;
         this.y = -1;
@@ -135,15 +145,6 @@
         }
     }
 
-    // function ContainerDimension(x, y, w, h){
-    //     this.x = x;
-    //     this.y = y;
-    //     this.w = w;
-    //     this.h = h;
-    //
-    //
-    // }
-
 
     function Container(x, y, w, h) {
         this.x = x;
@@ -172,8 +173,12 @@
         // recPiece.update();
         // // triPiece.update();
         // cirPiece.update();
-        container.update();
-        myScoreBoard.update();
+        recContainer.update();
+        cirContainer.update();
+        triContainer.update();
+        recScoreBoard.update();
+        triScoreBoard.update();
+        cirScoreBoard.update();
     }
 
     // var shapes=[];
@@ -214,8 +219,8 @@
         // var mx = parseInt(e.clientX - this.offsetX);
         // var my = parseInt(e.clientY - this.offsetY);
 
-        var mx = parseInt(e.clientX - this.offsetX);
-        var my = parseInt(e.clientY - this.offsetY);
+        var mx = parseInt(e.clientX - offsetX);
+        var my = parseInt(e.clientY - offsetY);
 
         // test each shape to see if mouse is inside
         // this.draggable = true;
@@ -243,24 +248,26 @@
         this.startX = mx;
         this.startY = my;
     }
-
+    recContainer = new Container(20, 310, 200, 100);
+    cirContainer = new Container(240, 310, 200, 100);
+    triContainer = new Container(460, 310, 200, 100);
     function myUp(e) {
         // tell the browser we're handling this mouse event
         e.preventDefault();
         e.stopPropagation();
-        // var dropContainer = new Container(240, 390, 200, 100);
-        console.log("container.x", container.x);
-        if (e.clientX > container.x && e.clientX < container.x + container.w && e.clientY > container.y && e.clientY < container.y + container.h) {
-        // if (e.clientX > 240 && e.clientX < 440 && e.clientY > 390 && e.clientY < 490) {
-
-            myScoreBoard.score += 1;
-            myScoreBoard.update();
+        console.log("recContainer.x", recContainer.x);
+        if (e.clientX > recContainer.x && e.clientX < recContainer.x + recContainer.w && e.clientY > recContainer.y && e.clientY < recContainer.y + recContainer.h) {
+            recScoreBoard.score += 1;
+            recScoreBoard.update();
         }
-        // clear all the dragging flags
-        // this.draggable = false;
-        // for(var i = 0;i < shapes.length; i++){
-        //     shapes[i].isDragging = false;
-        // }
+        else if (e.clientX > cirContainer.x && e.clientX < cirContainer.x + cirContainer.w && e.clientY > cirContainer.y && e.clientY < cirContainer.y + cirContainer.h) {
+            cirScoreBoard.score += 1;
+            cirScoreBoard.update();
+        }
+        else if (e.clientX > triContainer.x && e.clientX < triContainer.x + triContainer.w && e.clientY > triContainer.y && e.clientY < triContainer.y + triContainer.h) {
+            triScoreBoard.score += 1;
+            triScoreBoard.update();
+        }
         dragging = false;
     }
 
@@ -270,13 +277,13 @@
             e.preventDefault();
             e.stopPropagation();
             console.info("e.clientX", e.clientX)
-            console.info("this.offsetX", this.offsetX)
+            console.info("this.offsetX", offsetX)
 
-            // var mx = parseInt(e.clientX - this.offsetX);
-            // var my = parseInt(e.clientY - this.offsetY);
+            var mx = parseInt(e.clientX - offsetX);
+            var my = parseInt(e.clientY - offsetY);
 
-            var mx = parseInt(e.clientX);
-            var my = parseInt(e.clientY);
+            // var mx = parseInt(e.clientX);
+            // var my = parseInt(e.clientY);
 
             var dx = mx - this.startX;
             var dy = my - this.startY;
