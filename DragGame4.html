@@ -19,7 +19,6 @@
     var recPiece, triPiece, cirPiece, myScoreBoard,container;
     var int;
     function startGame() {
-<<<<<<< HEAD
     	int=Math.random();
     	if(0<int&&int<0.333){
         recPiece = new recComponent(55, 55, "red", 10, 10);}
@@ -35,13 +34,9 @@
        
         cirPiece = new cirComponent(30, "blue", 220, 50);*/
         container= new drawContainer(340, 920, 60, 30, 70);
-=======
-        recPiece = new recComponent(55, 55, "red", 10, 20);
-        triPiece = new triComponent(60, 60, "yellow", 400, 50);
-        cirPiece = new cirComponent(30, "blue", 220, 50);
-        container= new drawContainer(340, 420, 30, 15, 70);
->>>>>>> 0de6e5d12150373e271f443907169682d9875b29
         myScoreBoard= new ScoreBoard(280, 40);
+        // myScoreBoard= new scoreBoard("Consolas", "black", 280, 40, "Score:  ");
+
     }
 
     var myGameArea = {
@@ -51,12 +46,8 @@
             this.canvas.height = 500;
             this.context = this.canvas.getContext("2d");
             document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-<<<<<<< HEAD
             this.interval = setInterval(updateGameArea, 1000);
             //updateGameArea();
-=======
-            updateGameArea();
->>>>>>> 0de6e5d12150373e271f443907169682d9875b29
         },
         clear : function() {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -113,12 +104,10 @@
     function drawContainer(x, y, rw, rh, h) {
         this.update=function(){
             ctx = myGameArea.context;
-            // ctx.save();
-            // ctx.scale(1,  rw/rh);
+            ctx.save();
+            ctx.scale(1,  rh/rw);
             ctx.beginPath();
-            ctx.ellipse(x, y, rw, rh, Math.PI, 0, 2 * Math.PI);
-
-            // ctx.arc(x, y, rw, 0, 2 * Math.PI);
+            ctx.arc(x, y, rw, 0, 2 * Math.PI);
             ctx.moveTo((x-rw),y);
             ctx.lineTo((x-rw),(y+h));
             ctx.lineTo((x+rw),(y+h));
@@ -133,7 +122,6 @@
     function updateGameArea() {
         myGameArea.clear();
         startGame();
-<<<<<<< HEAD
         
     	if(0<int&&int<0.333){
         recPiece.x += 0;
@@ -158,11 +146,6 @@
         triPiece.update();}
         else{
         cirPiece.update();}
-=======
-        recPiece.update();
-        cirPiece.update();
-        triPiece.update();
->>>>>>> 0de6e5d12150373e271f443907169682d9875b29
         container.update();
         myScoreBoard.update();
     }
@@ -171,7 +154,6 @@
 
     function myMove(e){
         if (draggable){
-<<<<<<< HEAD
             console.log("e.pageX " + e.pageX);
             console.log("e.pageY " + e.pageY);
             console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
@@ -183,25 +165,12 @@
            // triPiece.y = e.pageY - canvas.offsetTop;
             console.log("triPiece.pageX " + triPiece.x);
             console.log("triPiece.pageY " + triPiece.y);
-=======
-            // console.log("e.pageX ", e.pageX);
-            // console.log("e.pageY ", e.pageY);
-            // console.log("e.clientX ", e.clientX);
-            // console.log("e.clientY ", e.clientY);
-            // console.log("e.screenX ", e.screenX);
-            // console.log("e.screenY ", e.screenY);
-            // console.log("myGameArea.canvas.offsetLeft ", myGameArea.canvas.offsetLeft);
-            // console.log("myGameArea.canvas.offsetTop ", myGameArea.canvas.offsetTop);
-            triPiece.x = e.clientX;
-            triPiece.y = e.clientY;
->>>>>>> 0de6e5d12150373e271f443907169682d9875b29
             triPiece.update();
         }
 
        
     }
 
-<<<<<<< HEAD
     function myDown(e){
 		if (e.pageX < triPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 30 +
             myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 30 + myGameArea.canvas.offsetTop &&
@@ -213,24 +182,15 @@
     }
 
     
-=======
-    function dragDown(e){
->>>>>>> 0de6e5d12150373e271f443907169682d9875b29
         draggable = true;
         myGameArea.canvas.onmousemove = myMove;
 
     }
 
-    function scoreUp(e){
-        // if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
-        //     myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
-        //     e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
-        if (e.clientX > 340 && e.clientX < 400 && e.clientY > 405 && e.clientY < 490){
-
-            console.log("e.clientX ", e.clientX);
-            console.log("e.clientY ", e.clientY);
-            console.log("e.pageX ", e.pageX);
-            console.log("e.pageY ", e.pageY);
+    function myUp(e){
+        if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
+            myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
+            e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
             console.log("myScoreBoard ", myScoreBoard);
             console.log("myScoreBoard.score ", myScoreBoard.score);
             myScoreBoard.score+=1;
@@ -245,7 +205,6 @@
     }
 
 
-<<<<<<< HEAD
    /* function myMove(e){
         if (draggable&&0.333<=int&&int<0.666){
             console.log("e.pageX " + e.pageX);
@@ -356,10 +315,6 @@
 
     myGameArea.canvas.onmousedown = myDown;
     myGameArea.canvas.onmouseup = myUp;
-=======
-    myGameArea.canvas.onmousedown = dragDown;
-    myGameArea.canvas.onmouseup = scoreUp;
->>>>>>> 0de6e5d12150373e271f443907169682d9875b29
 
     function startTimer(duration, display) {
         var start = Date.now(),
