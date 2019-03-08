@@ -13,11 +13,13 @@
 <body onload="myGameArea.start()" >
 
 <div>Time Remaining <span id="time"></span></div>
+<div>Score:  <span id="scoreBoard"></span></div>
 <button onClick="gameStartfunction ()">Start</button>
 <script>
 
     var recPiece, triPiece, cirPiece, myScoreBoard,container;
     var int;
+    var score=0;
     function startGame() {
     	int=Math.random();
     	if(0<int&&int<0.333){
@@ -34,7 +36,7 @@
        
         cirPiece = new cirComponent(30, "blue", 220, 50);*/
         container= new drawContainer(340, 920, 60, 30, 70);
-        myScoreBoard= new ScoreBoard(280, 40);
+       // myScoreBoard= new ScoreBoard(280, 40);
         // myScoreBoard= new scoreBoard("Consolas", "black", 280, 40, "Score:  ");
 
     }
@@ -86,7 +88,7 @@
         }
     }
 
-    function ScoreBoard(x, y) {
+   /* function ScoreBoard(x, y) {
         this.score=0;
         ctx = myGameArea.context;
         var fontHeight = 20;
@@ -99,7 +101,7 @@
             ctx.clearRect(x,y-fontHeight, ctx.measureText(txt).width, fontHeight);
             ctx.fillText(txt, x, y);
         }
-    }
+    }*/
 
     function drawContainer(x, y, rw, rh, h) {
         this.update=function(){
@@ -147,12 +149,12 @@
         else{
         cirPiece.update();}
         container.update();
-        myScoreBoard.update();
+       // myScoreBoard.update();
     }
 
     var draggable = false;
 
-    function myMove(e){
+   function myMove(e){
         if (draggable){
             console.log("e.pageX " + e.pageX);
             console.log("e.pageY " + e.pageY);
@@ -191,12 +193,12 @@
         if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
             myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
             e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
-            console.log("myScoreBoard ", myScoreBoard);
-            console.log("myScoreBoard.score ", myScoreBoard.score);
-            myScoreBoard.score+=1;
-            console.log("myScoreBoard1 ", myScoreBoard);
-            console.log("myScoreBoard.score1 ", myScoreBoard.score);
-            myScoreBoard.update();
+            console.log("score1 ", score);
+            
+            score+=1;
+            console.log("score2 ", score);
+            
+            document.getElementById("scoreBoard").innerHTML=score;
         }
 
         
@@ -205,8 +207,12 @@
     }
 
 
-   /* function myMove(e){
-        if (draggable&&0.333<=int&&int<0.666){
+   /*function myMove(e){
+
+   	    swith(int){
+
+   	    case 0.333<=int&&int<0.666: 
+        if (draggable){
             console.log("e.pageX " + e.pageX);
             console.log("e.pageY " + e.pageY);
             console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
@@ -216,9 +222,10 @@
             console.log("triPiece.pageX " + triPiece.x);
             console.log("triPiece.pageY " + triPiece.y);
             triPiece.update();
+            break;
         }
-
-        else if (draggable&&0<int&&int<0.333){
+		case 0<int&&int<0.333:
+        if (draggable){
             console.log("e.pageX " + e.pageX);
             console.log("e.pageY " + e.pageY);
             console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
@@ -228,9 +235,10 @@
             console.log("triPiece.pageX " + triPiece.x);
             console.log("triPiece.pageY " + triPiece.y);
             recPiece.update();
+            break;
         }
-
-        else (draggable&&int=>0.666&&int<1){
+		case int=>0.666&&int<1: 
+        if (draggable){
             console.log("e.pageX " + e.pageX);
             console.log("e.pageY " + e.pageY);
             console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
@@ -240,78 +248,94 @@
             console.log("triPiece.pageX " + triPiece.x);
             console.log("triPiece.pageY " + triPiece.y);
             cirPiece.update();
+            break;
+        }
         }
     }
 
     function myDown(e){
-		if (0.333<=int&&int<0.666&& e.pageX < triPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 30 +
+    	switch(int){
+    	case 0.333<=int&&int<0.666:
+		if (e.pageX < triPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 30 +
             myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 30 + myGameArea.canvas.offsetTop &&
             e.pageY > triPiece.y -30 + myGameArea.canvas.offsetTop){
             
         
          triPiece.x = e.pageX - canvas.offsetLeft;
         triPiece.y = e.pageY - canvas.offsetTop;
+        break;
     }
-
-    else if (0<int&&int<0.333&&e.pageX < recPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > recPiece.x - 30 +
+        case 0<int&&int<0.333:
+        if (e.pageX < recPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > recPiece.x - 30 +
             myGameArea.canvas.offsetLeft && e.pageY < recPiece.y + 30 + myGameArea.canvas.offsetTop &&
             e.pageY > recPiece.y -30 + myGameArea.canvas.offsetTop){
             
         
          recPiece.x = e.pageX - canvas.offsetLeft;
         recPiece.y = e.pageY - canvas.offsetTop;
+        break;
     }
-
-    else (e.pageX < cirPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > cirPiece.x - 30 +
+		case 0.666<=int&&int<1:
+        if (e.pageX < cirPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > cirPiece.x - 30 +
             myGameArea.canvas.offsetLeft && e.pageY < cirPiece.y + 30 + myGameArea.canvas.offsetTop &&
             e.pageY > cirPiece.y -30 + myGameArea.canvas.offsetTop){
             
         
          cirPiece.x = e.pageX - canvas.offsetLeft;
         cirPiece.y = e.pageY - canvas.offsetTop;
+        break;
+    }
+
     }
         draggable = true;
         myGameArea.canvas.onmousemove = myMove;
 
+
     }
 
     function myUp(e){
-        if (0.333<=int&&int<0.666&&e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
+    	switch(int) {
+    	case 0.333<=int&&int<0.666:
+        if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
             myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
             e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
-            console.log("myScoreBoard ", myScoreBoard);
-            console.log("myScoreBoard.score ", myScoreBoard.score);
-            myScoreBoard.score+=1;
-            console.log("myScoreBoard1 ", myScoreBoard);
-            console.log("myScoreBoard.score1 ", myScoreBoard.score);
-            myScoreBoard.update();
+            console.log("score1 ", score);
+            
+            score+=1;
+            console.log("score2 ", score);
+            
+            document.getElementById("scoreBoard").innerHTML=score;
+            break;
         }
-
-        else if (0<int&&int<0.333&&e.pageX < recPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > recPiece.x - 40 +
+		case 0<int&&int<0.333:
+        if (e.pageX < recPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > recPiece.x - 40 +
             myGameArea.canvas.offsetLeft && e.pageY < recPiece.y + 40 + myGameArea.canvas.offsetTop &&
             e.pageY > recPiece.y -40 + myGameArea.canvas.offsetTop){
-            console.log("myScoreBoard ", myScoreBoard);
-            console.log("myScoreBoard.score ", myScoreBoard.score);
-            myScoreBoard.score+=1;
-            console.log("myScoreBoard1 ", myScoreBoard);
-            console.log("myScoreBoard.score1 ", myScoreBoard.score);
-            myScoreBoard.update();
+            console.log("score1 ", score);
+            
+            score+=1;
+            console.log("score2 ", score);
+            
+            document.getElementById("scoreBoard").innerHTML=score;
+            break;
         }
-
-        else (e.pageX < cirPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > cirPiece.x - 40 +
+		case 0.666<=int&&int<1: 
+        if (e.pageX < cirPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > cirPiece.x - 40 +
             myGameArea.canvas.offsetLeft && e.pageY < cirPiece.y + 40 + myGameArea.canvas.offsetTop &&
             e.pageY > cirPiece.y -40 + myGameArea.canvas.offsetTop){
-            console.log("myScoreBoard ", myScoreBoard);
-            console.log("myScoreBoard.score ", myScoreBoard.score);
-            myScoreBoard.score+=1;
-            console.log("myScoreBoard1 ", myScoreBoard);
-            console.log("myScoreBoard.score1 ", myScoreBoard.score);
-            myScoreBoard.update();
+            console.log("score1 ", score);
+            
+            score+=1;
+            console.log("score2 ", score);
+            
+            document.getElementById("scoreBoard").innerHTML=score;
+            break;
+        }
         }
         draggable = false;
         myGameArea.canvas.onmousemove = null;
-    }*/
-
+    }
+*/
 
     myGameArea.canvas.onmousedown = myDown;
     myGameArea.canvas.onmouseup = myUp;
