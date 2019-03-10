@@ -80,6 +80,8 @@
         }
     }
 
+    // procedure programming
+    // object oriented programming (OOP)
     function Triangle() {
         ctx = myGameArea.context;
         var width = 60;
@@ -87,7 +89,7 @@
         var color = "yellow";
         this.x = -1;
         this.y = -1;
-        this.update = function (x, y) {
+        this.update = function(x, y) {
             console.log("triComponent update");
             console.info("x", x)
             console.info("y", y)
@@ -109,7 +111,6 @@
             this.y = y;
         }
     }
-
     function Circle(x, y) {
         ctx = myGameArea.context;
         var radius = 30;
@@ -290,9 +291,9 @@
 
             console.info("mx", mx)
             console.info("my", my)
-            cirPiece.update(mx, my);
+            // cirPiece.update(mx, my);
             triPiece.update(mx, my);
-            recPiece.update(mx, my);
+            // recPiece.update(mx, my);
             // || cirPiece.update(mx, my) || triPiece.update(mx, my);
 
 

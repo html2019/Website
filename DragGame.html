@@ -1,223 +1,234 @@
-    <!DOCTYPE html>
-    <html>
+<!DOCTYPE html>
+<html>
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
-    canvas {
-    border:1px solid black;
-    background-color: lightgrey;
-    }
+        canvas {
+            border: 1px solid black;
+            background-color: lightgrey;
+        }
     </style>
 </head>
-    <body onload="myGameArea.start()" >
+<body onload="myGameArea.start()">
 
-        <div>Time Remaining <span id="time"></span></div>
-        <button onClick="gameStartfunction ()">Start</button>
-    <script>
+<div>Time Remaining <span id="time"></span></div>
+<button onClick="gameStartfunction ()">Start</button>
+<script>
 
-        var recPiece, triPiece, cirPiece, myScoreBoard,container;
-        
-function startGame() {
-    recPiece = new recComponent(55, 55, "red", 10, 10);
-    triPiece = new triComponent(60, 60, "yellow", 400, 50);    
-    cirPiece = new cirComponent(30, "blue", 220, 10);
-    container= new drawContainer(340, 920, 30, 15, 70);
-    // function scoreBoard(width, height, color, x, y, display) {
-    myScoreBoard= new ScoreBoard(280, 40);
+    // Global variables
+    var recPiece, triPiece, cirPiece, myScoreBoard, container;
+
+    function startGame() {
+        recPiece = new recComponent(55, 55, "red", 10, 10);
+        recPiece2 = new recComponent(505, 55, "red", 10, 10);
+        triPiece = new triComponent(60, 60, "yellow", 400, 50);
+        cirPiece = new cirComponent(30, "blue", 220, 10);
+        container = new drawContainer(340, 720, 30, 15, 70);
+        // function scoreBoard(width, height, color, x, y, display) {
+        myScoreBoard = new ScoreBoard(280, 40);
         // myScoreBoard= new scoreBoard("Consolas", "black", 280, 40, "Score:  ");
-    
-}
-
-var myGameArea = {
-    canvas : document.createElement("canvas"),
-    start : function() {
-        this.canvas.width = 680;
-        this.canvas.height = 500;
-        this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        //this.interval = setInterval(updateGameArea, 500);
-        updateGameArea();
-    },
-    clear : function() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-}
 
-function recComponent(width, height, color, x, y) {
-    this.width = width;
-    this.height = height;
-    this.x = x;
-    this.y = y;    
-    this.update = function(){
+    var myGameArea = {
+        canvas: document.createElement("canvas"),
+        start: function () {
+            this.canvas.width = 680;
+            this.canvas.height = 500;
+            this.context = this.canvas.getContext("2d");
+            document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+            //this.interval = setInterval(updateGameArea, 500);
+            updateGameArea();
+        },
+        clear: function () {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+    }
+
+    // instance variable
+    function recComponent(width, color, x, y) {
+        this.width = width;
+        // this.height = height;
+        this.x = x;
+        this.y = y;
+        // local variable
+        var xx = x;
+        this.update = function () {
+            ctx = myGameArea.context;
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        };
+        this.setHeight = function (height) {
+            this.height = height;
+        }
+    }
+
+    function triComponent(width, height, color, x, y) {
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+        this.update = function () {
+            ctx = myGameArea.context;
+            ctx.beginPath();
+            ctx.moveTo(this.x, (this.y - this.height / 2));
+            ctx.lineTo((this.x - this.width / 2), (this.y + this.height / 2));
+            ctx.lineTo((this.x + this.width / 2), (this.y + this.height / 2));
+            ctx.lineTo(this.x, (this.y - this.height / 2));
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+    }
+
+    function cirComponent(radius, color, x, y) {
+        this.radius = radius;
+        this.x = x;
+        this.y = y;
+        this.update = function () {
+            ctx = myGameArea.context;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+        }
+    }
+
+    function ScoreBoard(x, y) {
+        this.score = 0;
         ctx = myGameArea.context;
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        var fontHeight = 20;
+        ctx.font = fontHeight + "px Arial";
+        var color = "black";
+        var display = "Score ";
+        this.update = function () {
+            var txt = display + this.score;
+            ctx.fillStyle = color;
+            ctx.clearRect(x, y - fontHeight, ctx.measureText(txt).width, fontHeight);
+            ctx.fillText(txt, x, y);
+        }
     }
-}
 
-function triComponent(width, height, color, x, y) {
-    this.width = width;
-    this.height = height;
-    this.x = x;
-    this.y = y;    
-    this.update = function(){
-        ctx = myGameArea.context;
-        ctx.beginPath();
-        ctx.moveTo(this.x, (this.y-this.height/2));
-        ctx.lineTo((this.x-this.width/2), (this.y+this.height/2));
-        ctx.lineTo((this.x+this.width/2), (this.y+this.height/2));
-        ctx.lineTo(this.x, (this.y-this.height/2));
-        ctx.fillStyle = color;
-        ctx.fill();
+    // container= new drawContainer(340, 920, 30, 15, 70);
+
+    function drawContainer(x, y, rw, rh, h) {
+        // this.x = x;
+        // this.y = y;
+        // this.rh = rh;
+        // this.rw = rw;
+        // this.h=h;
+        this.update = function () {
+            ctx = myGameArea.context;
+            ctx.save();
+            ctx.scale(1, rh / rw);
+            ctx.beginPath();
+            ctx.arc(x, y, rw, 0, 2 * Math.PI);
+            ctx.moveTo((x - rw), y);
+            ctx.lineTo((x - rw), (y + h));
+            ctx.lineTo((x + rw), (y + h));
+            ctx.lineTo((x + rw), y);
+            ctx.restore();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "orange";
+            ctx.stroke();
+        }
     }
-}
 
-function cirComponent(radius, color, x, y) {
-    this.radius = radius;
-    this.x = x;
-    this.y = y;    
-    this.update = function(){
-        ctx = myGameArea.context;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
-        ctx.fillStyle = color;
-        ctx.fill();
-        
+
+    function updateGameArea() {
+        myGameArea.clear();
+        startGame();
+        cirPiece.x += 0;
+        cirPiece.y += 0;
+        recPiece.x += 0;
+        recPiece.y += 0;
+        triPiece.x -= 0;
+        triPiece.y += 0;
+        container.x += 0;
+        container.y += 0;
+        recPiece.update();
+        cirPiece.update();
+        triPiece.update();
+        container.update();
+        myScoreBoard.update();
     }
-}
 
-function ScoreBoard(x, y) {
-    this.score=0;
-    ctx = myGameArea.context;
-    var fontHeight = 20;
-    ctx.font = fontHeight + "px Arial";
-    var color = "black";
-    var display = "Score ";
-    this.update = function(){
-        var txt = display + this.score;
-        ctx.fillStyle = color;
-        ctx.clearRect(x,y-fontHeight, ctx.measureText(txt).width, fontHeight);
-        ctx.fillText(txt, x, y);
+    var draggable = false;
+
+    function myMove(e) {
+        if (draggable) {
+            triPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
+            triPiece.y = e.pageY - myGameArea.canvas.offsetTop;
+            triPiece.update();
+        }
     }
-}
 
-function drawContainer(x, y, rw, rh, h) {
-  this.x = x;
-  this.y = y;
-  this.rh = rh;
-  this.rw = rw; 
-  this.h=h;
-  this.update=function(){ 
-  ctx = myGameArea.context;
-  ctx.save();
-  ctx.scale(1,  this.rh/this.rw);
-  ctx.beginPath();
-  ctx.arc(this.x, this.y, this.rw, 0, 2 * Math.PI);
-  ctx.moveTo((this.x-this.rw),this.y);
-  ctx.lineTo((this.x-this.rw),(this.y+this.h));
-  ctx.lineTo((this.x+this.rw),(this.y+this.h));
-  ctx.lineTo((this.x+this.rw),this.y);
-  ctx.restore();
-  ctx.lineWidth=4;
-  ctx.strokeStyle="orange";
-  ctx.stroke(); 
-  } 
-}
+    function myDown(e) {
 
+        // triPiece.x = e.pageX - canvas.offsetLeft;
+        //triPiece.y = e.pageY - canvas.offsetTop;
+        draggable = true;
+        myGameArea.canvas.onmousemove = myMove;
 
+    }
 
-function updateGameArea() {
-    myGameArea.clear();
-    startGame();
-    cirPiece.x += 0;
-    cirPiece.y += 0;
-    recPiece.x += 0;    
-    recPiece.y += 0;        
-    triPiece.x -= 0;        
-    triPiece.y += 0;
-    container.x+=0;
-    container.y+=0;        
-    recPiece.update();
-    cirPiece.update();        
-    triPiece.update();
-    container.update();
-    myScoreBoard.update();
-}
+    function myUp(e) {
 
- var draggable = false;
-  function myMove(e){
- if (draggable){
-  triPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
-  triPiece.y = e.pageY - myGameArea.canvas.offsetTop;
-  triPiece.update();
- }
-}
-
-function myDown(e){
- 
- // triPiece.x = e.pageX - canvas.offsetLeft;
-  //triPiece.y = e.pageY - canvas.offsetTop;
-  draggable = true;
-  myGameArea.canvas.onmousemove = myMove;
- 
-}
-
-function myUp(e){
-
-if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
- myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
- e.pageY > triPiece.y -40 + myGameArea.canvas.offsetTop){
-console.log("myScoreBoard ", myScoreBoard);
-console.log("myScoreBoard.score ", myScoreBoard.score);
- myScoreBoard.score+=1;
-console.log("myScoreBoard1 ", myScoreBoard);
-console.log("myScoreBoard.score1 ", myScoreBoard.score);
-myScoreBoard.update();
- }
- draggable = false;
- myGameArea.canvas.onmousemove = null;
-}
+        if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
+            myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
+            e.pageY > triPiece.y - 40 + myGameArea.canvas.offsetTop) {
+            console.log("myScoreBoard ", myScoreBoard);
+            console.log("myScoreBoard.score ", myScoreBoard.score);
+            myScoreBoard.score += 1;
+            console.log("myScoreBoard1 ", myScoreBoard);
+            console.log("myScoreBoard.score1 ", myScoreBoard.score);
+            myScoreBoard.update();
+        }
+        draggable = false;
+        myGameArea.canvas.onmousemove = null;
+    }
 
 
-myGameArea.canvas.onmousedown = myDown;
-myGameArea.canvas.onmouseup = myUp;        
-        
-        
-        function startTimer(duration, display) {
+    myGameArea.canvas.onmousedown = myDown;
+    myGameArea.canvas.onmouseup = myUp;
+
+
+    function startTimer(duration, display) {
         var start = Date.now(),
             diff,
             minutes,
             seconds;
+
         function timer() {
             diff = duration - (((Date.now() - start) / 1000) | 0);
             minutes = parseInt(diff / 60);
-            seconds= (diff % 60) | 0;
+            seconds = (diff % 60) | 0;
 
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
 
-            display.textContent = minutes + ":" + seconds; 
-             if (diff<=0) {
+            display.textContent = minutes + ":" + seconds;
+            if (diff <= 0) {
                 clearInterval(t);
             }
         }
+
         timer();
-        var t=setInterval(timer, 1000);
-        
-      
+        var t = setInterval(timer, 1000);
+
+
     }
-     function gameStartfunction () {
+
+    function gameStartfunction() {
         startGame();
-        var oneMinutes = 60 ,
+        var oneMinutes = 60,
             display = document.querySelector('#time');
         startTimer(oneMinutes, display);
     };
 
 
+</script>
+</body>
 
-    </script>
-    </body>
 
-
-    </html>
+</html>

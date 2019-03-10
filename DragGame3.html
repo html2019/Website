@@ -113,6 +113,8 @@
     function drawContainer(x, y, rw, rh, h) {
         this.update=function(){
             ctx = myGameArea.context;
+            // 1. global variables are evil (least power rule, prefer local variable over instance variable. Prefer instance variable over global variable).
+            // 2. mutations are evil.
             // ctx.save();
             // ctx.scale(1,  rw/rh);
             ctx.beginPath();
