@@ -17,7 +17,8 @@
 <button onClick="gameStartfunction ()">Start</button>
 <script>
 
-    var recPiece,myScoreBoard,container;
+    var recPiece = new recComponent();
+    var container = new drawContainer(330, 400, 60, 30, 70);
     var diff,gInterval;
     var score=0;
     var draggable = false;
@@ -28,14 +29,14 @@
         myGameArea.start();
     }
 
-    function startGame() {
-        
-        recPiece = new recComponent();
-        //recPiece.update(25,35);
-        container= new drawContainer(330, 400, 60, 30, 70);
-        container.update();
-
-    }
+    // function startGame() {
+    //
+    //     recPiece = new recComponent();
+    //     //recPiece.update(25,35);
+    //     container= new drawContainer(330, 400, 60, 30, 70);
+    //     container.update();
+    //
+    // }
 
     var myGameArea = {
         canvas : document.createElement("canvas"),
@@ -194,12 +195,12 @@
     }
 
     function gameStartfunction () {
-        startGame();
+        // startGame();
+        container.update();
         var oneMinutes = 10 ,
             display = document.querySelector('#time');
         startTimer(oneMinutes, display);
         gInterval=setInterval(updateGameArea, 50);
-        
     };
 
 </script>
