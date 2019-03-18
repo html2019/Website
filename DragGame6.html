@@ -5,27 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
         canvas {
-            border:1px solid black;
+            border: 1px solid black;
             background-color: lightgrey;
         }
     </style>
 </head>
-<body onload="initGameArea()" >
+<body onload="initGameArea()">
 
 <div>Time Remaining <span id="time"></span></div>
-<div>Score:  <span id="scoreBoard"></span></div>
+<div>Score: <span id="scoreBoard"></span></div>
 <button onClick="gameStartfunction ()">Start</button>
 <script>
 
     var recPiece = [];
     var container = new drawContainer(330, 400, 60, 30, 70);
-    var diff,gInterval;
-    var score=0;
+    var diff, gInterval;
+    var score = 0;
     var draggable = false;
-    var mx=25;
-    var my=35;
+    var mx = 25;
+    var my = 35;
 
-    function initGameArea(){
+    function initGameArea() {
         myGameArea.start();
     }
 
@@ -39,8 +39,9 @@
     // }
 
     var myGameArea = {
-        canvas : document.createElement("canvas"),
-        start : function() {
+        canvas: document.createElement("canvas"),
+        start: function () {
+            recPiece = new recComponent();
             this.canvas.width = 680;
             this.canvas.height = 500;
             this.frameNo = 0;
@@ -49,45 +50,54 @@
             //this.interval = setInterval(updateGameArea, 1000);
             //updateGameArea();
         },
-        clear : function() {
+        clear: function () {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
     }
 
     function recComponent(width, height, color, x, y) {
-        width=55;
-        height=55;
-        color="red";
-        this.color=color;
-        this.x=x;
-        this.y=y;
-        this.update = function(x,y){
-            
+        width = 55;
+        height = 55;
+        color = "red";
+        this.color = color;
+        this.x = x;
+        this.y = y;
+
+        setInterval(function () {
+            console.log("update y coordinate ...");
+            this.y += 1;
+        }, 100);
+
+        this.update = function (x, y) {
+
             ctx = myGameArea.context;
             ctx.fillStyle = color;
             ctx.fillRect(this.x, this.y, width, height);
             //this.x, this.y vs x, y
             //this.x=x;
             //this.y=y;
-        }
+        };
+
+
+
+
     }
 
-    
 
-     function drawContainer(x, y, rw, rh, h) {
-        this.x=x;
-        this.y=y;
-        this.update=function(){
+    function drawContainer(x, y, rw, rh, h) {
+        this.x = x;
+        this.y = y;
+        this.update = function () {
             ctx = myGameArea.context;
             ctx.beginPath();
             ctx.ellipse(x, y, rw, rh, 0, 0, 2 * Math.PI);
-            ctx.moveTo((x-rw),y);
-            ctx.lineTo((x-rw),(y+h));
-            ctx.lineTo((x+rw),(y+h));
-            ctx.lineTo((x+rw),y);
-            ctx.lineWidth=4;
-            ctx.strokeStyle="orange";
-            ctx.fillText("Rectangle", x-20,y+55);
+            ctx.moveTo((x - rw), y);
+            ctx.lineTo((x - rw), (y + h));
+            ctx.lineTo((x + rw), (y + h));
+            ctx.lineTo((x + rw), y);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "orange";
+            ctx.fillText("Rectangle", x - 20, y + 55);
             ctx.stroke();
         }
     }
@@ -97,25 +107,26 @@
         console.log("frameNo", myGameArea.frameNo)
         myGameArea.frameNo += 1;
         console.log("frameNo2", myGameArea.frameNo)
-        x=mx;
-        y=my;
-         if (myGameArea.frameNo == 1 || everyinterval(150)) {
-         	
-        recPiece.push(new recComponent(55,55,"red",x,y));
-    }
-    for (i = 0; i < recPiece.length; i += 1) {
-    	console.log("recPiece.x",recPiece[i].x)
-        console.log("recPiece.y",recPiece[i].y)
-        recPiece[i].y += 1;
-        
-        console.log("i",i)
-        console.log("recPiece.x1",recPiece[i].x)
-        console.log("recPiece.y1",recPiece[i].y)
-        recPiece[i].update();
-        console.log("recPiece.x2",recPiece[i].x)
-        console.log("recPiece.y2",recPiece[i].y)
-        console.log("i2",i)
-    }
+        x = mx;
+        y = my;
+        if (myGameArea.frameNo == 1 || everyinterval(150)) {
+
+            recPiece.push(new recComponent(55, 55, "red", x, y));
+        }
+        for (i = 0; i < recPiece.length; i += 1) {
+            console.log("recPiece.x", recPiece[i].x)
+            console.log("recPiece.y", recPiece[i].y)
+            // recPiece[i].y += 1;
+
+            console.log("i", i)
+            // Java, Scala, private variables cannot be accessed from outside
+            console.log("recPiece.x1", recPiece[i].x)
+            console.log("recPiece.y1", recPiece[i].y)
+            recPiece[i].update();
+            console.log("recPiece.x2", recPiece[i].x)
+            console.log("recPiece.y2", recPiece[i].y)
+            console.log("i2", i)
+        }
         //console.log("recPiece.x",recPiece[i].x)
         //console.log("recPiece.y",recPiece[i].y)
         //console.log("rec.width",recPiece.width)
@@ -125,70 +136,75 @@
         //console.log("recPiece.y2",recPiece[i].y)
         //console.log("width2",recPiece.width)
         container.update();
-       
-       
+
+
     }
 
     function everyinterval(n) {
-    if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
-    return false;
-}
+        if ((myGameArea.frameNo / n) % 1 == 0) {
+            return true;
+        }
+        return false;
+    }
 
-   function myMove(e){
-        if (draggable){
+    function myMove(e) {
+        if (draggable) {
             console.log("e.pageX " + e.pageX);
             console.log("e.pageY " + e.pageY);
             console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
             console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
-            recPiece[i].x = e.pageX - myGameArea.canvas.offsetLeft;
-            recPiece[i].y = e.pageY - myGameArea.canvas.offsetTop;
+            // recPiece[i].x = e.pageX - myGameArea.canvas.offsetLeft;
+            // recPiece[i].y = e.pageY - myGameArea.canvas.offsetTop;
             //mx=recPiece.x;
             //my=recPiece.y;
-            recPiece[i].update();
+            var newX = e.pageX - myGameArea.canvas.offsetLeft;
+            var newY = e.pageY - myGameArea.canvas.offsetTop;
 
-           // recPiece.x = e.pageX - canvas.offsetLeft;
-           // recPiece.y = e.pageY - canvas.offsetTop;
+            recPiece[i].update(newX, newY);
+
+            // recPiece.x = e.pageX - canvas.offsetLeft;
+            // recPiece.y = e.pageY - canvas.offsetTop;
             console.log("recPiece.pageX " + recPiece[i].x);
             console.log("recPiece.pageY " + recPiece[i].y);
             //recPiece.update();
         }
 
-       
+
     }
 
-    function myDown(e){
+    function myDown(e) {
         e.preventDefault();
         for (i = 0; i < recPiece.length; i += 1) {
-        if (e.pageX < recPiece[i].x + 30 + myGameArea.canvas.offsetLeft && e.pageX > recPiece[i].x - 30 +
-            myGameArea.canvas.offsetLeft && e.pageY < recPiece[i].y + 30 + myGameArea.canvas.offsetTop &&
-            e.pageY > recPiece[i].y -30 + myGameArea.canvas.offsetTop){
-            
-        
-         recPiece[i].x = e.pageX - myGameArea.canvas.offsetLeft;
-         recPiece[i].y = e.pageY - myGameArea.canvas.offsetTop;
-    }
+            if (e.pageX < recPiece[i].x + 30 + myGameArea.canvas.offsetLeft && e.pageX > recPiece[i].x - 30 +
+                myGameArea.canvas.offsetLeft && e.pageY < recPiece[i].y + 30 + myGameArea.canvas.offsetTop &&
+                e.pageY > recPiece[i].y - 30 + myGameArea.canvas.offsetTop) {
 
-    }
+
+                recPiece[i].x = e.pageX - myGameArea.canvas.offsetLeft;
+                recPiece[i].y = e.pageY - myGameArea.canvas.offsetTop;
+            }
+
+        }
         draggable = true;
         myGameArea.canvas.onmousemove = myMove;
 
     }
 
-    function myUp(e){
+    function myUp(e) {
         console.log("diff", diff);
         if (e.pageX < container.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > container.x - 40 +
             myGameArea.canvas.offsetLeft && e.pageY < container.y + 40 + myGameArea.canvas.offsetTop &&
-            e.pageY > container.y -40 + myGameArea.canvas.offsetTop&&diff>0){
+            e.pageY > container.y - 40 + myGameArea.canvas.offsetTop && diff > 0) {
             console.log("score1 ", score);
-            
-            score+=1;
+
+            score += 1;
             console.log("score2 ", score);
-            
-            document.getElementById("scoreBoard").innerHTML=score;
+
+            document.getElementById("scoreBoard").innerHTML = score;
 
         }
 
-        
+
         draggable = false;
         myGameArea.canvas.onmousemove = null;
     }
@@ -202,33 +218,35 @@
             //diff,
             minutes,
             seconds;
+
         function timer() {
             diff = duration - (((Date.now() - start) / 1000) | 0);
             minutes = parseInt(diff / 60);
-            seconds= (diff % 60) | 0;
+            seconds = (diff % 60) | 0;
 
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
 
             display.textContent = minutes + ":" + seconds;
-            if (diff<=0) {
+            if (diff <= 0) {
                 clearInterval(t);
                 clearInterval(gInterval);
 
-    
+
             }
         }
+
         timer();
-        var t=setInterval(timer, 1000);
+        var t = setInterval(timer, 1000);
     }
 
-    function gameStartfunction () {
+    function gameStartfunction() {
         // startGame();
         //container.update();
-        var oneMinutes = 50 ,
+        var oneMinutes = 50,
             display = document.querySelector('#time');
         startTimer(oneMinutes, display);
-        gInterval=setInterval(updateGameArea, 30);
+        gInterval = setInterval(updateGameArea, 30);
     };
 
 </script>
