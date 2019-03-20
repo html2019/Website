@@ -4,108 +4,48 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
-        canvas {
+        #myCanvas {
             border: 1px solid black;
             background-color: lightgrey;
         }
     </style>
 </head>
-<body onload="initGameArea()">
-<canvas width="680" height="500">
 
+<body>
 
+<canvas id="myCanvas",width="1000", height="500">
 </canvas>
 <div>Time Remaining <span id="time"></span></div>
 <div>Score: <span id="scoreBoard"></span></div>
 <button onClick="gameStartfunction ()">Start</button>
 <script>
-
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
     var diff, gInterval;
-    var score = 0;
-    var draggable = false;
 
-    function initGameArea() {
-        myGameArea.start();
-        // recPiece.update(25, 35);
-        var container = new drawContainer(330, 400, 60, 30, 70);
-    }
-
-    // function startGame() {
-    //
-    //     recPiece = new recComponent();
-    //     //recPiece.update(25,35);
-    //     container= new drawContainer(330, 400, 60, 30, 70);
-    //     container.update();
-    //
-    // }
-
-    var myGameArea = {
-        canvas: document.createElement("canvas"),
-        start: function () {
-            this.canvas.width = 680;
-            this.canvas.height = 500;
-            this.context = this.canvas.getContext("2d");
-            document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-            //this.interval = setInterval(updateGameArea, 1000);
-            //updateGameArea();
-        },
-        clear: function () {
-            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        }
-    }
-
-    var recPiece = new recComponent();
-    var recPiece2 = new recComponent();
-
+    container= new drawContainer(330, 400, 60, 30, 70);
+    container.update();
+    recPiece=new recComponent();
     recPiece.update(25, 35);
-
-    // var container = new drawContainer(330, 400, 60, 30, 70);
-
-
-    point
-    a(x = 10, y = 20)
-
-    pint
-    b(x = 30, y = 50)
-
-    a -> b
-
-    pint
-    c(x = 300, y = 500)
-
-    b -> c
 
     function recComponent() {
         var width = 60;
         var height = 60;
         var color = "red";
-
-        var draggable2 = false;
-
-
-        // cache
-
-
-        var ctx = myGameArea.context;
-
-        // this mutates a global variable, which is not good. We will improve this later.
+        var score = 0;
         ctx.fillStyle = color;
-        //var _x = -1, _y = -1;
+        var _x = -1, _y = -1;
         this.update = function (x, y) {
-            if (draggable2) {
-                x = 300, y = 500 // point c
-                _x = 30, _y = 50 // point b
-                // Delete the old shape
-                /* if (_x > 0) {
+           /* if (draggable2) {*/
+                if (_x > 0) {
                     ctx.clearRect(_x, _y, width, height);
-                }*/
-                // Move the shape to a new position
-                //ctx.clearRect(x, y - 1, width, height);
+                }
                 ctx.fillRect(x, y, width, height);
-                this.x = x; // 30
-                _y = y; // 50
+                _x = x; 
+                _y = y; 
             }
-        };
+
+       // };
 
         // this.autoDrop = function () {
         //     // y = y + 1;
@@ -119,22 +59,14 @@
 
         this.onMouseDown = function (x, y) {
             if (x < _x + 60 && x > _x && y < _y + 60 && y > recPiec.y) {
-                // draggable = true;
                 draggable2 = true;
-                // myMove();
 
             }
         }
     }
 
-
-    // ??? Why the function still takes 5 parameters, none of which is used?
     function drawContainer(x, y, rw, rh, h) {
-        //var x = 330;
-        //var y = 400;
-        //var rw=60;
-        //var rh=30;
-        // var h=70;
+        
         this.update = function () {
             //ctx = myGameArea.context;
             ctx.beginPath();
@@ -148,66 +80,38 @@
             ctx.fillText("Rectangle", x - 20, y + 55);
             ctx.stroke();
         }
+
+        this.getScore=function(sx,sy){
+
+            if (sx < x + 40  && sx> x - 40 && sy< y + 40 &&
+            sy> y - 40 && diff > 0) {
+            score += 1;
+            updatScore(score);
+            // document.getElementById("scoreBoard").innerHTML = score;
+        }
+        draggable2 = false;
+        canvas.onmousemove = null;
+
+        }
     }
-
-    /*function updateGameArea() {
-        myGameArea.clear();
-        console.log("recPiece.x", recPiece.x)
-        console.log("recPiece.y", recPiece.y)
-        console.log("rec.width", recPiece.width)
-        recPiece.update(mx, my);
-        //recPiece.update();
-        console.log("recPiece.x2", recPiece.x)
-        console.log("recPiece.y2", recPiece.y)
-        console.log("width2", recPiece.width)
-        // ???
-        // container.update();
-
-
-    }*/
 
 
     function myMove(e) {
-        // if (draggable) {
-        console.log("e.pageX " + e.pageX);
-        console.log("e.pageY " + e.pageY);
-        console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
-        console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
-        var mx = e.pageX - myGameArea.canvas.offsetLeft;
-        var my = e.pageY - myGameArea.canvas.offsetTop;
+       
+        var mx = e.pageX - canvas.offsetLeft;
+        var my = e.pageY - canvas.offsetTop;
         recPiece.update(mx, my);
-
-        // recPiece.x = e.pageX - canvas.offsetLeft;
-        // recPiece.y = e.pageY - canvas.offsetTop;
-        console.log("recPiece.pageX " + recPiece.x);
-        console.log("recPiece.pageY " + recPiece.y);
-        //recPiece.update();
-        // }
 
 
     }
 
     function myDown(e) {
         e.preventDefault();
-        var newX = e.pageX - myGameArea.canvas.offsetLeft;
-        var newY = e.pageY - myGameArea.canvas.offsetTop;
+        var newX = e.pageX - canvas.offsetLeft;
+        var newY = e.pageY - canvas.offsetTop;
 
-        /*var shapes = [recPiece];
-        shapes.forEach(function (shape) {
-            shape.onMouseDown(newX, newY);
-        });*/
         recPiece.onMouseDown(newX, newY);
-        // triPiece.onafterprint()
-
-        // if (e.pageX < recPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > recPiece.x - 30 +
-        //     myGameArea.canvas.offsetLeft && e.pageY < recPiece.y + 30 + myGameArea.canvas.offsetTop &&
-        //     e.pageY > recPiece.y - 30 + myGameArea.canvas.offsetTop) {
-        //     recPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
-        //     recPiece.y = e.pageY - myGameArea.canvas.offsetTop;
-        // }
-        //draggable = true;
-        // ???
-        //myGameArea.canvas.onmousemove = myMove;
+    
     }
 
     function updatScore(score) {
@@ -216,28 +120,20 @@
     }
 
     function myUp(e) {
-        console.log("diff", diff);
-        if (e.pageX < container.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > container.x - 40 +
-            myGameArea.canvas.offsetLeft && e.pageY < container.y + 40 + myGameArea.canvas.offsetTop &&
-            e.pageY > container.y - 40 + myGameArea.canvas.offsetTop && diff > 0) {
-            console.log("score1 ", score);
-            score += 1;
-            console.log("score2 ", score);
 
-            // document.getElementById("scoreBoard").innerHTML = score;
-        }
-        draggable = false;
-        myGameArea.canvas.onmousemove = null;
+        var cx = e.pageX - canvas.offsetLeft;
+        var cy = e.pageY - canvas.offsetTop;
+        container.getScore(cx,cy);
+       
     }
 
 
-    myGameArea.canvas.onmousedown = myDown;
-    myGameArea.canvas.onmousemove = myMove;
-    myGameArea.canvas.onmouseup = myUp;
+    canvas.onmousedown = myDown;
+    canvas.onmousemove = myMove;
+    canvas.onmouseup = myUp;
 
     function startTimer(duration, display) {
         var start = Date.now(),
-            //diff,
             minutes,
             seconds;
 
