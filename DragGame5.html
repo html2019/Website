@@ -11,21 +11,22 @@
     </style>
 </head>
 <body onload="initGameArea()">
+<canvas width="680" height="500">
 
+
+</canvas>
 <div>Time Remaining <span id="time"></span></div>
 <div>Score: <span id="scoreBoard"></span></div>
 <button onClick="gameStartfunction ()">Start</button>
 <script>
-    var recPiece = new recComponent();
-    //recPiece.update(25, 35);
-   // var container = new drawContainer(330, 400, 60, 30, 70);
+
     var diff, gInterval;
     var score = 0;
     var draggable = false;
 
     function initGameArea() {
         myGameArea.start();
-        recPiece.update(25, 35);
+        // recPiece.update(25, 35);
         var container = new drawContainer(330, 400, 60, 30, 70);
     }
 
@@ -53,39 +54,76 @@
         }
     }
 
-    var ctx = myGameArea.context;
+    var recPiece = new recComponent();
+    var recPiece2 = new recComponent();
+
+    recPiece.update(25, 35);
+
+    // var container = new drawContainer(330, 400, 60, 30, 70);
+
+
+    point
+    a(x = 10, y = 20)
+
+    pint
+    b(x = 30, y = 50)
+
+    a -> b
+
+    pint
+    c(x = 300, y = 500)
+
+    b -> c
 
     function recComponent() {
         var width = 60;
         var height = 60;
         var color = "red";
+
+        var draggable2 = false;
+
+
+        // cache
+
+
+        var ctx = myGameArea.context;
+
         // this mutates a global variable, which is not good. We will improve this later.
         ctx.fillStyle = color;
         //var _x = -1, _y = -1;
         this.update = function (x, y) {
-            // Delete the old shape
-           /* if (_x > 0) {
-                ctx.clearRect(_x, _y, width, height);
-            }*/
-            // Move the shape to a new position
-             ctx.clearRect(x, y-1, width, height);
-            ctx.fillRect(x, y, width, height);
+            if (draggable2) {
+                x = 300, y = 500 // point c
+                _x = 30, _y = 50 // point b
+                // Delete the old shape
+                /* if (_x > 0) {
+                    ctx.clearRect(_x, _y, width, height);
+                }*/
+                // Move the shape to a new position
+                //ctx.clearRect(x, y - 1, width, height);
+                ctx.fillRect(x, y, width, height);
+                this.x = x; // 30
+                _y = y; // 50
+            }
         };
 
-        this.autoDrop = function () {
-            setInterval(this.update(x, y++), 50);
-            // start timer
-            // from the timer function, call this.update()
-            // this.update(_x, _y + 1);
-        }
+        // this.autoDrop = function () {
+        //     // y = y + 1;
+        //     this.update(x, y + 1);
+        //
+        //     setInterval(this.update(x, y + 1), 50);
+        //     // start timer
+        //     // from the timer function, call this.update()
+        //     // this.update(_x, _y + 1);
+        // }
 
         this.onMouseDown = function (x, y) {
+            if (x < _x + 60 && x > _x && y < _y + 60 && y > recPiec.y) {
+                // draggable = true;
+                draggable2 = true;
+                // myMove();
 
-            if (x < recPiece.x + 60 && x > recPiece.x && y< recPiece.y + 60 &&
-            y > recPiec.y) {
-            draggable = true;
-           // myMove();
-            
+            }
         }
     }
 
@@ -96,7 +134,7 @@
         //var y = 400;
         //var rw=60;
         //var rh=30;
-       // var h=70;
+        // var h=70;
         this.update = function () {
             //ctx = myGameArea.context;
             ctx.beginPath();
@@ -130,21 +168,21 @@
 
 
     function myMove(e) {
-        if (draggable) {
-            console.log("e.pageX " + e.pageX);
-            console.log("e.pageY " + e.pageY);
-            console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
-            console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
-            var mx = e.pageX - myGameArea.canvas.offsetLeft;
-            var my = e.pageY - myGameArea.canvas.offsetTop;
-            recPiece.update(mx, my);
+        // if (draggable) {
+        console.log("e.pageX " + e.pageX);
+        console.log("e.pageY " + e.pageY);
+        console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
+        console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
+        var mx = e.pageX - myGameArea.canvas.offsetLeft;
+        var my = e.pageY - myGameArea.canvas.offsetTop;
+        recPiece.update(mx, my);
 
-            // recPiece.x = e.pageX - canvas.offsetLeft;
-            // recPiece.y = e.pageY - canvas.offsetTop;
-            console.log("recPiece.pageX " + recPiece.x);
-            console.log("recPiece.pageY " + recPiece.y);
-            //recPiece.update();
-        }
+        // recPiece.x = e.pageX - canvas.offsetLeft;
+        // recPiece.y = e.pageY - canvas.offsetTop;
+        console.log("recPiece.pageX " + recPiece.x);
+        console.log("recPiece.pageY " + recPiece.y);
+        //recPiece.update();
+        // }
 
 
     }
@@ -167,12 +205,12 @@
         //     recPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
         //     recPiece.y = e.pageY - myGameArea.canvas.offsetTop;
         // }
-       //draggable = true;
+        //draggable = true;
         // ???
         //myGameArea.canvas.onmousemove = myMove;
     }
 
-    function updatScore(score){
+    function updatScore(score) {
         document.getElementById("scoreBoard").innerHTML = score;
 
     }
@@ -186,7 +224,7 @@
             score += 1;
             console.log("score2 ", score);
 
-           // document.getElementById("scoreBoard").innerHTML = score;
+            // document.getElementById("scoreBoard").innerHTML = score;
         }
         draggable = false;
         myGameArea.canvas.onmousemove = null;
@@ -218,12 +256,12 @@
             }
 
         }
-        
+
 
         timer();
         var t = setInterval(timer, 1000);
     }
-    
+
 
     function gameStartfunction() {
         // startGame();
