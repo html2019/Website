@@ -17,16 +17,16 @@
 <button onClick="gameStartfunction ()">Start</button>
 <script>
     var recPiece = new recComponent();
-    recPiece.update(25, 35);
-    var container = new drawContainer(330, 400, 60, 30, 70);
+    //recPiece.update(25, 35);
+   // var container = new drawContainer(330, 400, 60, 30, 70);
     var diff, gInterval;
     var score = 0;
     var draggable = false;
-    var mx = 25;
-    var my = 35;
 
     function initGameArea() {
         myGameArea.start();
+        recPiece.update(25, 35);
+        var container = new drawContainer(330, 400, 60, 30, 70);
     }
 
     // function startGame() {
@@ -56,39 +56,49 @@
     var ctx = myGameArea.context;
 
     function recComponent() {
-        var width = 55;
-        var height = 55;
+        var width = 60;
+        var height = 60;
         var color = "red";
         // this mutates a global variable, which is not good. We will improve this later.
         ctx.fillStyle = color;
-        var _x = -1, _y = -1;
+        //var _x = -1, _y = -1;
         this.update = function (x, y) {
             // Delete the old shape
-            if (_x > 0) {
+           /* if (_x > 0) {
                 ctx.clearRect(_x, _y, width, height);
-            }
+            }*/
             // Move the shape to a new position
+             ctx.clearRect(x, y-1, width, height);
             ctx.fillRect(x, y, width, height);
         };
 
         this.autoDrop = function () {
+            setInterval(this.update(x, y++), 50);
             // start timer
             // from the timer function, call this.update()
             // this.update(_x, _y + 1);
         }
 
         this.onMouseDown = function (x, y) {
-            //
+
+            if (x < recPiece.x + 60 && x > recPiece.x && y< recPiece.y + 60 &&
+            y > recPiec.y) {
+            draggable = true;
+           // myMove();
+            
         }
     }
 
 
     // ??? Why the function still takes 5 parameters, none of which is used?
     function drawContainer(x, y, rw, rh, h) {
-        this.x = x;
-        this.y = y;
+        //var x = 330;
+        //var y = 400;
+        //var rw=60;
+        //var rh=30;
+       // var h=70;
         this.update = function () {
-            ctx = myGameArea.context;
+            //ctx = myGameArea.context;
             ctx.beginPath();
             ctx.ellipse(x, y, rw, rh, 0, 0, 2 * Math.PI);
             ctx.moveTo((x - rw), y);
@@ -102,7 +112,7 @@
         }
     }
 
-    function updateGameArea() {
+    /*function updateGameArea() {
         myGameArea.clear();
         console.log("recPiece.x", recPiece.x)
         console.log("recPiece.y", recPiece.y)
@@ -116,7 +126,7 @@
         // container.update();
 
 
-    }
+    }*/
 
 
     function myMove(e) {
@@ -125,10 +135,8 @@
             console.log("e.pageY " + e.pageY);
             console.log("myGameArea.canvas.offsetLeft " + myGameArea.canvas.offsetLeft);
             console.log("myGameArea.canvas.offsetTop " + myGameArea.canvas.offsetTop);
-            recPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
-            recPiece.y = e.pageY - myGameArea.canvas.offsetTop;
-            mx = recPiece.x;
-            my = recPiece.y;
+            var mx = e.pageX - myGameArea.canvas.offsetLeft;
+            var my = e.pageY - myGameArea.canvas.offsetTop;
             recPiece.update(mx, my);
 
             // recPiece.x = e.pageX - canvas.offsetLeft;
@@ -146,11 +154,11 @@
         var newX = e.pageX - myGameArea.canvas.offsetLeft;
         var newY = e.pageY - myGameArea.canvas.offsetTop;
 
-        var shapes = [recPiece];
+        /*var shapes = [recPiece];
         shapes.forEach(function (shape) {
             shape.onMouseDown(newX, newY);
-        });
-        // recPiece.onMouseDown(newX, newY);
+        });*/
+        recPiece.onMouseDown(newX, newY);
         // triPiece.onafterprint()
 
         // if (e.pageX < recPiece.x + 30 + myGameArea.canvas.offsetLeft && e.pageX > recPiece.x - 30 +
@@ -159,9 +167,14 @@
         //     recPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
         //     recPiece.y = e.pageY - myGameArea.canvas.offsetTop;
         // }
-        draggable = true;
+       //draggable = true;
         // ???
-        myGameArea.canvas.onmousemove = myMove;
+        //myGameArea.canvas.onmousemove = myMove;
+    }
+
+    function updatScore(score){
+        document.getElementById("scoreBoard").innerHTML = score;
+
     }
 
     function myUp(e) {
@@ -172,7 +185,8 @@
             console.log("score1 ", score);
             score += 1;
             console.log("score2 ", score);
-            document.getElementById("scoreBoard").innerHTML = score;
+
+           // document.getElementById("scoreBoard").innerHTML = score;
         }
         draggable = false;
         myGameArea.canvas.onmousemove = null;
@@ -180,6 +194,7 @@
 
 
     myGameArea.canvas.onmousedown = myDown;
+    myGameArea.canvas.onmousemove = myMove;
     myGameArea.canvas.onmouseup = myUp;
 
     function startTimer(duration, display) {
@@ -201,11 +216,14 @@
                 clearInterval(t);
                 clearInterval(gInterval);
             }
+
         }
+        
 
         timer();
         var t = setInterval(timer, 1000);
     }
+    
 
     function gameStartfunction() {
         // startGame();
@@ -214,8 +232,8 @@
         var display = document.querySelector('#time');
         startTimer(oneMinutes, display);
         // ???
-        gInterval=setInterval(updateGameArea, 50);
-    };
+        //gInterval=setInterval(updateGameArea, 50);
+    }
 
 </script>
 </body>

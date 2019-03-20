@@ -155,15 +155,15 @@
 
     var draggable = false;
 
-    function myMove(e) {
+    function myMove() {
         if (draggable) {
-            triPiece.x = e.pageX - myGameArea.canvas.offsetLeft;
-            triPiece.y = e.pageY - myGameArea.canvas.offsetTop;
+            triPiece.x = event.pageX - myGameArea.canvas.offsetLeft;
+            triPiece.y = event.pageY - myGameArea.canvas.offsetTop;
             triPiece.update();
         }
     }
 
-    function myDown(e) {
+    function myDown() {
 
         // triPiece.x = e.pageX - canvas.offsetLeft;
         //triPiece.y = e.pageY - canvas.offsetTop;
@@ -172,11 +172,11 @@
 
     }
 
-    function myUp(e) {
+    function myUp() {
 
-        if (e.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > triPiece.x - 40 +
-            myGameArea.canvas.offsetLeft && e.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
-            e.pageY > triPiece.y - 40 + myGameArea.canvas.offsetTop) {
+        if (event.pageX < triPiece.x + 40 + myGameArea.canvas.offsetLeft && event.pageX > triPiece.x - 40 +
+            myGameArea.canvas.offsetLeft && event.pageY < triPiece.y + 40 + myGameArea.canvas.offsetTop &&
+            event.pageY > triPiece.y - 40 + myGameArea.canvas.offsetTop) {
             console.log("myScoreBoard ", myScoreBoard);
             console.log("myScoreBoard.score ", myScoreBoard.score);
             myScoreBoard.score += 1;
