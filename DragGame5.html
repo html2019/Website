@@ -51,22 +51,11 @@
             }
         };
 
-        // this.autoDrop = function () {
-        //     // y = y + 1;
-        //     this.update(x, y + 1);
-        //
-        //     setInterval(this.update(x, y + 1), 50);
-        //     // start timer
-        //     // from the timer function, call this.update()
-        //     // this.update(_x, _y + 1);
-        // }
 
         this.onMouseDown = function (x, y) {
-            console.log("draggable2 before", draggable2)
             if (x < _x + width && x > _x && y < _y + height && y > _y) {
                 draggable2 = true;
             }
-            console.log("draggable2 after", draggable2)
 
         }
         this.onScore = function () {
@@ -84,7 +73,6 @@
         var score = 0;
 
         this.update = function () {
-            //ctx = myGameArea.context;
             ctx.beginPath();
             ctx.ellipse(x, y, rw, rh, 0, 0, 2 * Math.PI);
             ctx.moveTo((x - rw), y);
@@ -104,7 +92,6 @@
                 updatScore(score);
                 recPiece.onScore();
                 repaint();
-                // document.getElementById("scoreBoard").innerHTML = score;
             }
         }
 
@@ -113,7 +100,8 @@
         }
 
         function repaint () {
-            // ...
+           recPiece = new Rectangle();
+           recPiece.update(25, 35);
         }
     }
 
@@ -180,13 +168,9 @@
 
 
     function gameStartfunction() {
-        // startGame();
-        //scoreBoard.update();
         var oneMinutes = 10;
         var display = document.querySelector('#time');
         startTimer(oneMinutes, display);
-        // ???
-        //gInterval=setInterval(updateGameArea, 50);
     }
 
 </script>
