@@ -33,8 +33,8 @@
     //
     //     recPiece = new recComponent();
     //     //recPiece.update(25,35);
-    //     container= new drawContainer(330, 400, 60, 30, 70);
-    //     container.update();
+    //     scoreBoard= new drawContainer(330, 400, 60, 30, 70);
+    //     scoreBoard.update();
     //
     // }
 
@@ -135,7 +135,7 @@
         //console.log("recPiece.x2",recPiece[i].x)
         //console.log("recPiece.y2",recPiece[i].y)
         //console.log("width2",recPiece.width)
-        container.update();
+        scoreBoard.update();
 
 
     }
@@ -192,9 +192,9 @@
 
     function myUp(e) {
         console.log("diff", diff);
-        if (e.pageX < container.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > container.x - 40 +
-            myGameArea.canvas.offsetLeft && e.pageY < container.y + 40 + myGameArea.canvas.offsetTop &&
-            e.pageY > container.y - 40 + myGameArea.canvas.offsetTop && diff > 0) {
+        if (e.pageX < scoreBoard.x + 40 + myGameArea.canvas.offsetLeft && e.pageX > scoreBoard.x - 40 +
+            myGameArea.canvas.offsetLeft && e.pageY < scoreBoard.y + 40 + myGameArea.canvas.offsetTop &&
+            e.pageY > scoreBoard.y - 40 + myGameArea.canvas.offsetTop && diff > 0) {
             console.log("score1 ", score);
 
             score += 1;
@@ -242,7 +242,7 @@
 
     function gameStartfunction() {
         // startGame();
-        //container.update();
+        //scoreBoard.update();
         var oneMinutes = 50,
             display = document.querySelector('#time');
         startTimer(oneMinutes, display);

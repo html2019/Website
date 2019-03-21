@@ -13,39 +13,43 @@
 
 <body>
 
-<canvas id="myCanvas",width="1000", height="500">
+<canvas id="myCanvas" width="680px" height="500px">
 </canvas>
 <div>Time Remaining <span id="time"></span></div>
 <div>Score: <span id="scoreBoard"></span></div>
 <button onClick="gameStartfunction ()">Start</button>
 <script>
     var canvas = document.getElementById("myCanvas");
+    canvas.onmousedown = myDown;
+    canvas.onmousemove = myMove;
+    canvas.onmouseup = myUp;
+
     var ctx = canvas.getContext("2d");
     var diff, gInterval;
 
-    container= new drawContainer(330, 400, 60, 30, 70);
-    container.update();
-    recPiece=new recComponent();
+    scoreBoard = new ScoreBoard();
+    scoreBoard.update();
+    recPiece = new Rectangle();
     recPiece.update(25, 35);
 
-    function recComponent() {
+    function Rectangle() {
         var width = 60;
         var height = 60;
         var color = "red";
         var score = 0;
         ctx.fillStyle = color;
         var _x = -1, _y = -1;
+        var draggable2 = false;
         this.update = function (x, y) {
-           /* if (draggable2) {*/
+            if (draggable2 || _x < 0) {
                 if (_x > 0) {
                     ctx.clearRect(_x, _y, width, height);
                 }
                 ctx.fillRect(x, y, width, height);
-                _x = x; 
-                _y = y; 
+                _x = x;
+                _y = y;
             }
-
-       // };
+        };
 
         // this.autoDrop = function () {
         //     // y = y + 1;
@@ -58,15 +62,27 @@
         // }
 
         this.onMouseDown = function (x, y) {
-            if (x < _x + 60 && x > _x && y < _y + 60 && y > recPiec.y) {
+            console.log("draggable2 before", draggable2)
+            if (x < _x + width && x > _x && y < _y + height && y > _y) {
                 draggable2 = true;
-
             }
+            console.log("draggable2 after", draggable2)
+
+        }
+        this.onScore = function () {
+            draggable2 = false;
+            console.log("onScore ", draggable2)
         }
     }
 
-    function drawContainer(x, y, rw, rh, h) {
-        
+    function ScoreBoard() {
+        var x = 330;
+        var y = 400;
+        var rw = 60;
+        var rh = 30;
+        var h = 70;
+        var score = 0;
+
         this.update = function () {
             //ctx = myGameArea.context;
             ctx.beginPath();
@@ -81,28 +97,31 @@
             ctx.stroke();
         }
 
-        this.getScore=function(sx,sy){
+        this.getScore = function (sx, sy) {
 
-            if (sx < x + 40  && sx> x - 40 && sy< y + 40 &&
-            sy> y - 40 && diff > 0) {
-            score += 1;
-            updatScore(score);
-            // document.getElementById("scoreBoard").innerHTML = score;
+            if (this.isOnScoreBoard(sx, sy) ) {
+                score += 1;
+                updatScore(score);
+                recPiece.onScore();
+                repaint();
+                // document.getElementById("scoreBoard").innerHTML = score;
+            }
         }
-        draggable2 = false;
-        canvas.onmousemove = null;
 
+        this.isOnScoreBoard = function (sx, sy) {
+            return sx < x + 40 && sx > x - 40 && sy < y + 40 && sy > y - 40;
+        }
+
+        function repaint () {
+            // ...
         }
     }
 
 
     function myMove(e) {
-       
         var mx = e.pageX - canvas.offsetLeft;
         var my = e.pageY - canvas.offsetTop;
         recPiece.update(mx, my);
-
-
     }
 
     function myDown(e) {
@@ -110,8 +129,11 @@
         var newX = e.pageX - canvas.offsetLeft;
         var newY = e.pageY - canvas.offsetTop;
 
-        recPiece.onMouseDown(newX, newY);
-    
+        if (!scoreBoard.isOnScoreBoard(newX, newY)) {
+            recPiece.onMouseDown(newX, newY);
+        }
+
+
     }
 
     function updatScore(score) {
@@ -123,14 +145,12 @@
 
         var cx = e.pageX - canvas.offsetLeft;
         var cy = e.pageY - canvas.offsetTop;
-        container.getScore(cx,cy);
-       
+        scoreBoard.getScore(cx, cy);
+
     }
 
 
-    canvas.onmousedown = myDown;
-    canvas.onmousemove = myMove;
-    canvas.onmouseup = myUp;
+
 
     function startTimer(duration, display) {
         var start = Date.now(),
@@ -161,7 +181,7 @@
 
     function gameStartfunction() {
         // startGame();
-        //container.update();
+        //scoreBoard.update();
         var oneMinutes = 10;
         var display = document.querySelector('#time');
         startTimer(oneMinutes, display);
