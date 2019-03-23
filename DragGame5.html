@@ -26,18 +26,22 @@
 
     var ctx = canvas.getContext("2d");
     var diff, gInterval;
+    var score = 0;
 
     scoreBoard = new ScoreBoard();
     scoreBoard.update();
+    CircleBoard = new CircleTarget();
+    CircleBoard.update();
     recPiece = new Rectangle();
     recPiece.update(25, 35);
+    CirclePiece = new Circle();
+    CirclePiece.update(600, 60);
 
     function Rectangle() {
         var width = 60;
         var height = 60;
         var color = "red";
-        var score = 0;
-        ctx.fillStyle = color;
+        //ctx.fillStyle = color;
         var _x = -1, _y = -1;
         var draggable2 = false;
         this.update = function (x, y) {
@@ -45,6 +49,7 @@
                 if (_x > 0) {
                     ctx.clearRect(_x, _y, width, height);
                 }
+                ctx.fillStyle = color;
                 ctx.fillRect(x, y, width, height);
                 _x = x;
                 _y = y;
@@ -64,13 +69,47 @@
         }
     }
 
+
+
+function Circle() {
+        var radius = 35;
+        var color = "blue";
+        //ctx.fillStyle = color;
+        var _x = -1, _y = -1;
+        var draggable1 = false;
+        this.update = function (x, y) {
+            if (draggable1 || _x < 0) {
+                if (_x > 0) {
+                    ctx.clearRect(_x- radius, _y- radius, 2*radius, 2*radius);
+                }
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2*Math.PI);
+                ctx.fillStyle = color;
+                ctx.fill();
+                _x = x;
+                _y = y;
+            }
+        };
+
+
+        this.onMouseDown = function (x, y) {
+            if (x < _x + radius && x > _x- radius && y < _y + radius && y > _y-radius) {
+                draggable1 = true;
+            }
+
+        }
+        this.onScore = function () {
+            draggable1 = false;
+            console.log("onScoreC ", draggable1)
+        }
+    }
+
     function ScoreBoard() {
-        var x = 330;
+        var x = 200;
         var y = 400;
         var rw = 60;
         var rh = 30;
-        var h = 70;
-        var score = 0;
+        var h = 70
 
         this.update = function () {
             ctx.beginPath();
@@ -106,10 +145,45 @@
     }
 
 
+
+    function CircleTarget() {
+        var x = 450;
+        var y = 420;
+        var radius = 50;
+
+        this.update = function () {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2*Math.PI);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "orange";
+            ctx.stroke();
+        }
+
+        this.getScore = function (sx, sy) {
+
+            if (this.isOnScoreBoard(sx, sy) ) {
+                score += 1;
+                updatScore(score);
+                CirclePiece.onScore();
+                repaint();
+            }
+        }
+
+        this.isOnScoreBoard = function (sx, sy) {
+            return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
+        }
+
+        function repaint () {
+           CirclePiece = new Circle();
+           CirclePiece.update(600, 60);
+        }
+    }
+
     function myMove(e) {
         var mx = e.pageX - canvas.offsetLeft;
         var my = e.pageY - canvas.offsetTop;
         recPiece.update(mx, my);
+        CirclePiece.update(mx, my);
     }
 
     function myDown(e) {
@@ -117,8 +191,9 @@
         var newX = e.pageX - canvas.offsetLeft;
         var newY = e.pageY - canvas.offsetTop;
 
-        if (!scoreBoard.isOnScoreBoard(newX, newY)) {
+        if (!scoreBoard.isOnScoreBoard(newX, newY)&&!CircleBoard.isOnScoreBoard(newX, newY)) {
             recPiece.onMouseDown(newX, newY);
+            CirclePiece.onMouseDown(newX, newY);
         }
 
 
@@ -134,6 +209,7 @@
         var cx = e.pageX - canvas.offsetLeft;
         var cy = e.pageY - canvas.offsetTop;
         scoreBoard.getScore(cx, cy);
+        CircleBoard.getScore(cx, cy);
 
     }
 
