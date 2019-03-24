@@ -26,15 +26,26 @@
 
     var ctx = canvas.getContext("2d");
     var diff, gInterval;
+    // The score global variable idally shall belong to the dashboard. Using score as a global variable
+    // creates a bug: If a circle is dragged to a rectagnle container, the score still increases.
     var score = 0;
 
+    // Explicitly use var to declare a global varialbe: var scoreBoard.
     scoreBoard = new ScoreBoard();
+    // ScoreBoard constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
     scoreBoard.update();
+    // 1. Explicitly use var to declare a global variable: var scoreBoard.
+    // 2. The name, CircleTarget, does not follow the same pattern as the other shape, Rectangle. Maybe change CircleTarget to CircleBoard.
     CircleBoard = new CircleTarget();
+    // CircleTarget constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
     CircleBoard.update();
     recPiece = new Rectangle();
+    // 1. Explicitly use var to declare a global varialbe: var scoreBoard.
+    // 2. Rectangle constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
     recPiece.update(25, 35);
     CirclePiece = new Circle();
+    // Notice that if every time we construct an object and then have to call one of its methods to initialize it, we probably shall do the intialization in the constructor instead.
+    // The current syntax feels not so clean.
     CirclePiece.update(600, 60);
 
     function Rectangle() {
@@ -134,11 +145,13 @@ function Circle() {
             }
         }
 
+        // 40 is repeated, should create a local variable for it.
         this.isOnScoreBoard = function (sx, sy) {
             return sx < x + 40 && sx > x - 40 && sy < y + 40 && sy > y - 40;
         }
 
         function repaint () {
+            // Updating a global variable usually should be done from outside, in a so-called driver function.
            recPiece = new Rectangle();
            recPiece.update(25, 35);
         }
