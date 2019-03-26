@@ -1,279 +1,279 @@
-        <!DOCTYPE html>
-        <html>
+<!DOCTYPE html>
+<html>
 
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <style>
-                #myCanvas {
-                    border: 1px solid black;
-                    background-color: lightgrey;
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        #myCanvas {
+            border: 1px solid black;
+            background-color: lightgrey;
+        }
+    </style>
+</head>
+
+<body>
+
+<canvas id="myCanvas" width="680px" height="500px">
+</canvas>
+<div>Time Remaining <span id="time"></span></div>
+<div>Score: <span id="scoreBoard"></span></div>
+<button onClick="gameStartfunction ()">Start</button>
+<script>
+    var canvas = document.getElementById("myCanvas");
+    canvas.onmousedown = myDown;
+    canvas.onmousemove = myMove;
+    canvas.onmouseup = myUp;
+
+    var ctx = canvas.getContext("2d");
+    var diff, gInterval;
+    // The score global variable idally shall belong to the dashboard. Using score as a global variable
+    // creates a bug: If a circle is dragged to a rectagnle container, the score still increases.
+    var score = 0;
+
+    var scoreBoard = new ScoreBoard(200, 400);
+    // ScoreBoard constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
+    //scoreBoard.update();
+    var circleBoard = new CircleBoard(450, 420);
+    // CircleTarget constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
+    //CircleBoard.update();
+    recPiece = new Rectangle();
+    // 2. Rectangle constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
+    recPiece.update(25, 35);
+    cirPiece = new Circle();
+    // Notice that if every time we construct an object and then have to call one of its methods to initialize it, we probably shall do the intialization in the constructor instead.
+    // The current syntax feels not so clean.
+    cirPiece.update(600, 60);
+
+    function Rectangle(x, y) {
+        var width = 60;
+        var height = 60;
+        var color = "red";
+        //ctx.fillStyle = color;
+        var _x = -1, _y = -1;
+        var draggable2 = false;
+        // 20190326: This is NOT object oriented programming, draggable should NOT be an instance variable!!!
+        this.draggable = draggable2;
+        this.update = function (x, y) {
+            if (draggable2 || _x < 0) {
+                if (_x > 0) {
+                    ctx.clearRect(_x, _y, width, height);
                 }
-            </style>
-        </head>
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, width, height);
+                _x = x;
+                _y = y;
+            }
+        };
 
-        <body>
 
-        <canvas id="myCanvas" width="680px" height="500px">
-        </canvas>
-        <div>Time Remaining <span id="time"></span></div>
-        <div>Score: <span id="scoreBoard"></span></div>
-        <button onClick="gameStartfunction ()">Start</button>
-        <script>
-            var canvas = document.getElementById("myCanvas");
-            canvas.onmousedown = myDown;
-            canvas.onmousemove = myMove;
-            canvas.onmouseup = myUp;
+        this.onMouseDown = function (x, y) {
+            if (x < _x + width && x > _x && y < _y + height && y > _y) {
+                draggable2 = true;
+            }
 
-            var ctx = canvas.getContext("2d");
-            var diff, gInterval;
-            // The score global variable idally shall belong to the dashboard. Using score as a global variable
-            // creates a bug: If a circle is dragged to a rectagnle container, the score still increases.
-            var score = 0;
+        }
+        this.onScore = function () {
+            draggable2 = false;
+            console.log("onScore ", draggable2)
+        }
+    }
 
-            // Explicitly use var to declare a global varialbe: var scoreBoard.
-            var scoreBoard = new ScoreBoard(200, 400);
-            // ScoreBoard constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
-            //scoreBoard.update();
-            // 1. Explicitly use var to declare a global variable: var scoreBoard.
-            // 2. The name, CircleTarget, does not follow the same pattern as the other shape, Rectangle. Maybe change CircleTarget to CircleBoard.
-            var circleBoard = new CircleBoard(450, 420);
-            // CircleTarget constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
-            //CircleBoard.update();
+
+    function Circle(x, y) {
+        var radius = 35;
+        var color = "blue";
+        //ctx.fillStyle = color;
+        var _x = -1, _y = -1;
+        var draggable1 = false;
+        this.draggable = draggable1;
+        this.update = function (x, y) {
+            if (draggable1 || _x < 0) {
+                if (_x > 0) {
+                    // 20190326: 2 occurs twice below. Everytime you have repetitive numbers, a local variable should be created.
+                    ctx.clearRect(_x - radius, _y - radius, 2 * radius, 2 * radius);
+                }
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = color;
+                ctx.fill();
+                _x = x;
+                _y = y;
+            }
+        };
+
+
+        this.onMouseDown = function (x, y) {
+            if (x < _x + radius && x > _x - radius && y < _y + radius && y > _y - radius) {
+                draggable1 = true;
+            }
+
+        }
+        this.onScore = function () {
+            draggable1 = false;
+            console.log("onScoreC ", draggable1)
+        }
+    }
+
+    function ScoreBoard(x, y) {
+        // 20190326: the variable name x is the same as the input parameter name x. This is BAD practice.
+        // In addition, you are NOT using the input parameters at all.
+        var x = 200;
+        var y = 400;
+        var rw = 60;
+        var rh = 30;
+        var h = 70
+        // 20190326: b is not a good variable name. A good name should be descriptive.
+        var b = 40;
+
+        //this.update = function () {
+        ctx.beginPath();
+        ctx.ellipse(x, y, rw, rh, 0, 0, 2 * Math.PI);
+        ctx.moveTo((x - rw), y);
+        ctx.lineTo((x - rw), (y + h));
+        ctx.lineTo((x + rw), (y + h));
+        ctx.lineTo((x + rw), y);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "orange";
+        ctx.fillText("Rectangle", x - 20, y + 55);
+        ctx.stroke();
+        // }
+
+        this.getScore = function (sx, sy) {
+
+            if (this.isOnScoreBoard(sx, sy)) {
+                score += 1;
+                updatScore(score);
+                recPiece.onScore();
+                repaint();
+            }
+        }
+
+        this.isOnScoreBoard = function (sx, sy) {
+            return sx < x + b && sx > x - b && sy < y + b && sy > y - b;
+        }
+
+        function repaint() {
+            // Updating a global variable usually should be done from outside, in a so-called driver function.
             recPiece = new Rectangle();
-            // 1. Explicitly use var to declare a global varialbe: var scoreBoard.
-            // 2. Rectangle constructor should take two parameters, x and y, as the initial positions so we do not need to call update() after constructing the object.
             recPiece.update(25, 35);
-            cirPiece= new Circle();
-            // Notice that if every time we construct an object and then have to call one of its methods to initialize it, we probably shall do the intialization in the constructor instead.
-            // The current syntax feels not so clean.
+            ScoreBoard(200, 400);
+        }
+    }
+
+
+    function CircleBoard() {
+        var x = 450;
+        var y = 420;
+        var radius = 50;
+
+        //this.update = function () {
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "orange";
+        ctx.stroke();
+        // }
+
+        this.getScore = function (sx, sy) {
+
+            if (this.isOnScoreBoard(sx, sy)) {
+                score += 1;
+                updatScore(score);
+                cirPiece.onScore();
+                repaint();
+            }
+        }
+
+        this.isOnScoreBoard = function (sx, sy) {
+            return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
+        }
+
+        function repaint() {
+            cirPiece = new Circle();
             cirPiece.update(600, 60);
+            // 20190326: why 450 and 420 are here? Why not use x and y instead??
+            CircleBoard(450, 420);
+        }
+    }
 
-            function Rectangle(x,y) {
-                var width = 60;
-                var height = 60;
-                var color = "red";
-                //ctx.fillStyle = color;
-                var _x = -1, _y = -1;
-                var draggable2 = false;
-                this.draggable=draggable2;
-               this.update = function (x, y) {
-                    if (draggable2 || _x < 0) {
-                        if (_x > 0) {
-                            ctx.clearRect(_x, _y, width, height);
-                        }
-                        ctx.fillStyle = color;
-                        ctx.fillRect(x, y, width, height);
-                        _x = x;
-                        _y = y;
-                    }
-                };
+    function myMove(e) {
+        var mx = e.pageX - canvas.offsetLeft;
+        var my = e.pageY - canvas.offsetTop;
+
+        recPiece.update(mx, my);
+        cirPiece.update(mx, my);
+    }
+
+    function myDown(e) {
+        e.preventDefault();
+        var newX = e.pageX - canvas.offsetLeft;
+        var newY = e.pageY - canvas.offsetTop;
+
+        if (!scoreBoard.isOnScoreBoard(newX, newY) && !circleBoard.isOnScoreBoard(newX, newY)) {
+            recPiece.onMouseDown(newX, newY);
+            cirPiece.onMouseDown(newX, newY);
+        }
 
 
-                this.onMouseDown = function (x, y) {
-                    if (x < _x + width && x > _x && y < _y + height && y > _y) {
-                        draggable2 = true;
-                    }
+    }
 
-                }
-                this.onScore = function () {
-                    draggable2 = false;
-                    console.log("onScore ", draggable2)
-                }
+    function updatScore(score) {
+        document.getElementById("scoreBoard").innerHTML = score;
+
+    }
+
+    function myUp(e) {
+
+        var cx = e.pageX - canvas.offsetLeft;
+        var cy = e.pageY - canvas.offsetTop;
+
+
+        // 20190326: This is NOT object oriented programming, draggable should NOT be an instance variable!!!
+        /*  scoreBoard.getScore(cx, cy);
+            circleBoard.getScore(cx, cy);*/
+        if (cirPiece.draggable === false) {
+            scoreBoard.getScore(cx, cy);
+        }
+        else {
+            circleBoard.getScore(cx, cy);
+        }
+
+    }
+
+
+    function startTimer(duration, display) {
+        var start = Date.now(),
+            minutes,
+            seconds;
+
+        function timer() {
+            diff = duration - (((Date.now() - start) / 1000) | 0);
+            minutes = parseInt(diff / 60);
+            seconds = (diff % 60) | 0;
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+            if (diff <= 0) {
+                clearInterval(t);
+                clearInterval(gInterval);
             }
 
+        }
 
 
-        function Circle(x,y) {
-                var radius = 35;
-                var color = "blue";
-                //ctx.fillStyle = color;
-                var _x = -1, _y = -1;
-                var draggable1 = false;
-                this.draggable=draggable1;
-                this.update = function (x, y) {
-                    if (draggable1 || _x < 0) {
-                        if (_x > 0) {
-                            ctx.clearRect(_x- radius, _y- radius, 2*radius, 2*radius);
-                        }
-                        ctx.beginPath();
-                        ctx.arc(x, y, radius, 0, 2*Math.PI);
-                        ctx.fillStyle = color;
-                        ctx.fill();
-                        _x = x;
-                        _y = y;
-                    }
-                };
+        timer();
+        var t = setInterval(timer, 1000);
+    }
 
 
-                this.onMouseDown = function (x, y) {
-                    if (x < _x + radius && x > _x- radius && y < _y + radius && y > _y-radius) {
-                        draggable1 = true;
-                    }
+    function gameStartfunction() {
+        var oneMinutes = 10;
+        var display = document.querySelector('#time');
+        startTimer(oneMinutes, display);
+    }
 
-                }
-                this.onScore = function () {
-                    draggable1 = false;
-                    console.log("onScoreC ", draggable1)
-                }
-            }
-
-            function ScoreBoard(x,y) {
-                var x = 200;
-                var y = 400;
-                var rw = 60;
-                var rh = 30;
-                var h = 70
-                var b=40;
-
-                //this.update = function () {
-                    ctx.beginPath();
-                    ctx.ellipse(x, y, rw, rh, 0, 0, 2 * Math.PI);
-                    ctx.moveTo((x - rw), y);
-                    ctx.lineTo((x - rw), (y + h));
-                    ctx.lineTo((x + rw), (y + h));
-                    ctx.lineTo((x + rw), y);
-                    ctx.lineWidth = 4;
-                    ctx.strokeStyle = "orange";
-                    ctx.fillText("Rectangle", x - 20, y + 55);
-                    ctx.stroke();
-               // }
-
-                this.getScore = function (sx, sy) {
-
-                    if (this.isOnScoreBoard(sx, sy) ) {
-                        score += 1;
-                        updatScore(score);
-                        recPiece.onScore();
-                        repaint();
-                    }
-                }
-
-                // 40 is repeated, should create a local variable for it.
-                this.isOnScoreBoard = function (sx, sy) {
-                    return sx < x + b && sx > x - b && sy < y + b && sy > y - b;
-                }
-
-                function repaint() {
-                    // Updating a global variable usually should be done from outside, in a so-called driver function.
-                  recPiece = new Rectangle();
-                    recPiece.update(25, 35);
-                    ScoreBoard(200, 400);
-                }
-            }
-
-
-
-            function CircleBoard() {
-                var x = 450;
-                var y = 420;
-                var radius = 50;
-
-                //this.update = function () {
-                    ctx.beginPath();
-                    ctx.arc(x, y, radius, 0, 2*Math.PI);
-                    ctx.lineWidth = 4;
-                    ctx.strokeStyle = "orange";
-                    ctx.stroke();
-               // }
-
-                this.getScore = function (sx, sy) {
-
-                    if (this.isOnScoreBoard(sx, sy) ) {
-                        score += 1;
-                        updatScore(score);
-                        cirPiece.onScore();
-                        repaint();
-                    }
-                }
-
-                this.isOnScoreBoard = function (sx, sy) {
-                    return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
-                }
-
-                function repaint () {
-                    cirPiece = new Circle();
-                  cirPiece.update(600, 60);
-                  CircleBoard(450, 420);
-                }
-            }
-
-            function myMove(e) {
-                var mx = e.pageX - canvas.offsetLeft;
-                var my = e.pageY - canvas.offsetTop;
-
-                recPiece.update(mx, my);
-                cirPiece.update(mx, my);
-            }
-
-            function myDown(e) {
-                e.preventDefault();
-                var newX = e.pageX - canvas.offsetLeft;
-                var newY = e.pageY - canvas.offsetTop;
-
-                if (!scoreBoard.isOnScoreBoard(newX, newY)&&!circleBoard.isOnScoreBoard(newX, newY)) {
-                    recPiece.onMouseDown(newX, newY);
-                    cirPiece.onMouseDown(newX, newY);
-                }
-
-
-            }
-
-            function updatScore(score) {
-                document.getElementById("scoreBoard").innerHTML = score;
-
-            }
-
-            function myUp(e) {
-
-                var cx = e.pageX - canvas.offsetLeft;
-                var cy = e.pageY - canvas.offsetTop;
-
-
-                /*  scoreBoard.getScore(cx, cy);
-                    circleBoard.getScore(cx, cy);*/
-                if(cirPiece.draggable===false){
-                scoreBoard.getScore(cx, cy);}
-                else {
-                circleBoard.getScore(cx, cy);}
-
-            }
-
-
-
-
-            function startTimer(duration, display) {
-                var start = Date.now(),
-                    minutes,
-                    seconds;
-
-                function timer() {
-                    diff = duration - (((Date.now() - start) / 1000) | 0);
-                    minutes = parseInt(diff / 60);
-                    seconds = (diff % 60) | 0;
-
-                    minutes = minutes < 10 ? "0" + minutes : minutes;
-                    seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                    display.textContent = minutes + ":" + seconds;
-                    if (diff <= 0) {
-                        clearInterval(t);
-                        clearInterval(gInterval);
-                    }
-
-                }
-
-
-                timer();
-                var t = setInterval(timer, 1000);
-            }
-
-
-            function gameStartfunction() {
-                var oneMinutes = 10;
-                var display = document.querySelector('#time');
-                startTimer(oneMinutes, display);
-            }
-
-        </script>
-        </body>
-        </html>
+</script>
+</body>
+</html>
