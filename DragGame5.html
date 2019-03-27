@@ -42,6 +42,8 @@
         var defaultY = 35;
         var _x = defaultX, _y = defaultY;
         var draggable2 = false;
+
+        // This again is against OOP. Should use an instance varaible instead.
         this.shapeId = null;
         paint(_x, _y);
         this.update = function (x, y) {
@@ -55,6 +57,7 @@
         this.onMouseDown = function (x, y) {
             if (x < _x + width && x > _x && y < _y + height && y > _y) {
                 draggable2 = true;
+                // This should not be done here. It should be done in the onScore method.
                 this.shapeId = "rectangle";
             }
         }
@@ -63,6 +66,7 @@
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
+            // This method should return the type of shape.
         }
 
         function paint(x, y) {
@@ -78,7 +82,9 @@
         var defaultX = 600;
         var defaultY = 60;
         var _x = defaultX, _y = defaultY;
+        // This again is against OOP. There is no need for this variable if you let onScore to accept x and y coordinates.
         this.shapeId = null;
+        // Deleted unused code.
        // var cirShape=false;
         paint(_x, _y);
         this.update = function (x, y) {
@@ -93,15 +99,18 @@
         this.onMouseDown = function (x, y) {
             if (x < _x + radius && x > _x - radius && y < _y + radius && y > _y - radius) {
                 draggable1 = true;
-               this.shapeId="circle";
+                // There is no need for this line of code at all.
+                this.shapeId="circle";
             }
 
         }
+        // This method should take two input paramaters, x and y. It should decide if x and y are within its area.
         this.onScore = function () {
             draggable1 = false;
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
+            // This method should return the type of shape.
         }
 
         function paint(x, y) {
@@ -135,6 +144,7 @@
 
         this.getScore = function (sx, sy) {
             // shapeType
+            // Again this is a BAD violation of OOP. Why the board is telling the shape what to do???
             if (this.isOnScoreBoard(sx, sy)&&recPiece.shapeId==="rectangle") {
                 recScoreBoard.update();
                 updatScore(totalScore);
@@ -159,6 +169,7 @@
         var y = 370;
         var radius = 50;
         ctx.beginPath();
+        // Use local variables to replace ALL magic numbers.
         ctx.arc(x, y, radius, 0, 2 * Math.PI);
         ctx.lineWidth = 4;
         ctx.strokeStyle = "orange";
@@ -169,6 +180,7 @@
                 cirScoreBoard.update();
                 updatScore(totalScore);
                 cirPiece.onScore();
+                // Use local variables to replace ALL magic numbers.
                 ctx.clearRect(x-radius, y-radius, 2*radius, 2*radius);
                 repaint();
             }
