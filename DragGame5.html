@@ -55,19 +55,25 @@
             }
         };
         this.onMouseDown = function (x, y) {
-            if (x < _x + width && x > _x && y < _y + height && y > _y) {
+            if (onTarget(x, y)) {
                 draggable2 = true;
                 // This should not be done here. It should be done in the onScore method.
                 this.shapeId = "rectangle";
             }
-        }
-        this.onScore = function () {
-            draggable2 = false;
-            _x = defaultX;
-            _y = defaultY;
-            paint(_x, _y);
-            // This method should return the type of shape.
-        }
+        };
+        function onTarget(x, y) {
+            return x < _x + width && x > _x && y < _y + height && y > _y;
+        };
+        this.onScore = function(x, y) {
+            var scored = onTarget(x, y);
+            if (scored) {
+                draggable2 = false;
+                _x = defaultX;
+                _y = defaultY;
+                paint(_x, _y);
+            }
+            return scored;
+        };
 
         function paint(x, y) {
             ctx.fillStyle = color;
@@ -145,10 +151,19 @@
         this.getScore = function (sx, sy) {
             // shapeType
             // Again this is a BAD violation of OOP. Why the board is telling the shape what to do???
-            if (this.isOnScoreBoard(sx, sy)&&recPiece.shapeId==="rectangle") {
+            if (this.isOnScoreBoard(sx, sy)) {
                 recScoreBoard.update();
-                updatScore(totalScore);
-                recPiece.onScore();
+
+                var recScored = recPiece.onScore(sx, sy);
+
+                // var cirScored = cirPiece.onScore(sx, sy);
+
+                if (recScored) {
+                    updatScore(totalScore);
+                }
+
+
+
                 ctx.clearRect(x-radiusX, y-radiusY, 2*radiusX, 3.5*radiusY);
                 repaint();
             }
