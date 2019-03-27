@@ -45,7 +45,6 @@
 
         // This again is against OOP. Should use an instance varaible instead.
         paint(_x, _y);
-        this.update = function (x, y) {
             if (draggable2) {
                 ctx.clearRect(_x, _y, width, height);
                 paint(x, y);
@@ -53,18 +52,11 @@
                 _y = y;
             }
         };
-<<<<<<< HEAD
         this.onMouseDown = function (x, y) {
             if (onTarget(x, y)) {
-=======
-
-         this.onMouseDown = function (x, y) {
-            if (x < _x + width && x > _x && y < _y + height && y > _y) {
->>>>>>> 1f97f8fca0c21c24e184a617081719a1b651b0e7
                 draggable2 = true;
                 // This should not be done here. It should be done in the onScore method.
             }
-<<<<<<< HEAD
         };
         function onTarget(x, y) {
             return x < _x + width && x > _x && y < _y + height && y > _y;
@@ -79,24 +71,6 @@
             }
             return scored;
         };
-=======
-        }
-
-       /* this.isOnDragArea=function(sx,sy){
-
-            return sx < _x + width && sx > _x && sy < _y + height && sy > _y;
-        }*/
-
-
-        this.onScore = function () {
-            draggable2 = false;
-            _x = defaultX;
-            _y = defaultY;
-            paint(_x, _y);
-            // This method should return the type of shape.
-        }
->>>>>>> 1f97f8fca0c21c24e184a617081719a1b651b0e7
-
         function paint(x, y) {
             ctx.fillStyle = color;
             ctx.fillRect(x, y, width, height);

@@ -31,8 +31,8 @@
     var circleBoard = new CircleBoard();
     var recPiece = new Rectangle();
     var cirPiece = new Circle();
-    var recScoreBoard=new pieceScoreBoard(150,480, "RecScore: ");
-    var cirScoreBoard=new pieceScoreBoard(400,480, "CirScore: ");
+    var recScoreBoard = new pieceScoreBoard(150, 480, "RecScore: ");
+    var cirScoreBoard = new pieceScoreBoard(400, 480, "CirScore: ");
 
     function Rectangle() {
         var width = 60;
@@ -53,7 +53,8 @@
             }
         };
 
-         this.onMouseDown = function (x, y) {
+        this.onMouseDown = function (x, y) {
+            // "Rectangle" is a magic string used in more than one place, so a variable should be created for it.
             if (x < _x + width && x > _x && y < _y + height && y > _y) {
                 draggable2 = true;
                 return "Rectangle";
@@ -95,8 +96,9 @@
         this.onMouseDown = function (x, y) {
             if (x < _x + radius && x > _x - radius && y < _y + radius && y > _y - radius) {
                 draggable1 = true;
+                // "Circle" is a magic string used in more than one place, so a variable should be created for it.
                 return "Circle";
-                console.log("this.onMouseDown", this.onMouseDown(x,y));
+                console.log("this.onMouseDown", this.onMouseDown(x, y));
             }
 
 
@@ -140,38 +142,42 @@
         ctx.stroke();
 
         this.getScore = function (sx, sy) {
-            if(recPiece.onMouseDown(x,y)==="Rectangle"){
-            if (this.isOnScoreBoard(sx, sy)) {
-                recScoreBoard.update();
-                updatScore(totalScore);
-                recPiece.onScore();
-                ctx.clearRect(x-radiusX, y-radiusY, 2*radiusX, 3.5*radiusY);
+            // This check is still intrusive. First of all, the board has to know the name of the shape, "Rectangle".
+            // Second, "Rectangle" is a string, which is more complicated than a Boolean (true or false).
+            // Letting recPiece.onScore to return a Boolean is cleaner.
+            if (recPiece.onMouseDown(x, y) === "Rectangle") {
+                if (this.isOnScoreBoard(sx, sy)) {
+                    recScoreBoard.update();
+                    updatScore(totalScore);
+                    recPiece.onScore();
+                    // Get rid of ALL magic numbers.
+                    ctx.clearRect(x - radiusX, y - radiusY, 2 * radiusX, 3.5 * radiusY);
+                }
             }
-        }
 
-    }
+        }
 
         this.isOnScoreBoard = function (sx, sy) {
             return sx < x + boundaryWidth && sx > x - boundaryWidth && sy < y + boundaryWidth && sy > y - boundaryWidth;
         }
 
-        this.repaint=function(sx,sy) {
+        this.repaint = function (sx, sy) {
             if (sx < x + boundaryWidth2 && sx > x - boundaryWidth2 && sy < y + boundaryWidth2 && sy > y - boundaryWidth2) {
-            ScoreBoard();
+                ScoreBoard();
+            }
         }
-      }
 
-}
+    }
 
 
     function CircleBoard() {
         var x = 450;
         var y = 370;
         var radius = 50;
-        var radius2=150;
+        var radius2 = 150;
         ctx.beginPath();
-        var width=2*radius;
-        var height=2*radius;
+        var width = 2 * radius;
+        var height = 2 * radius;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
         ctx.arc(x, y, radius, startAngle, endAngle);
@@ -179,51 +185,48 @@
         ctx.strokeStyle = "orange";
         ctx.stroke();
         this.getScore = function (sx, sy) {
-            if(cirPiece.onMouseDown(x,y)==="Circle"){
-            if (this.isOnScoreBoard(sx, sy)) {
-                cirScoreBoard.update();
-                updatScore(totalScore);
-                cirPiece.onScore();
-                ctx.clearRect(x-radius, y-radius, width, height);
+            if (cirPiece.onMouseDown(x, y) === "Circle") {
+                if (this.isOnScoreBoard(sx, sy)) {
+                    cirScoreBoard.update();
+                    updatScore(totalScore);
+                    cirPiece.onScore();
+                    ctx.clearRect(x - radius, y - radius, width, height);
+                }
             }
         }
-    }
 
         this.isOnScoreBoard = function (sx, sy) {
             return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
         }
 
 
-
-          this.repaint=function(sx,sy) {
+        this.repaint = function (sx, sy) {
             if (sx < x + radius2 && sx > x - radius2 && sy < y + radius2 && sy > y - radius2) {
-            CircleBoard();
+                CircleBoard();
+            }
         }
-      }
     }
-
-
 
 
     function pieceScoreBoard(x, y, displayText) {
         var score = 0;
         var fontHeight = 20;
         var color = "black";
-        var display =displayText;
+        var display = displayText;
         paint();
         this.update = function () {
-        score+=1;
-        totalScore+=1;
-        paint();
+            score += 1;
+            totalScore += 1;
+            paint();
 
         }
 
-    function paint(){
-        var txt = display + score;
-        ctx.font = fontHeight + "px Arial";
-        ctx.fillStyle = color;
-        ctx.clearRect(x, y - fontHeight, ctx.measureText(txt).width, fontHeight);
-        ctx.fillText(txt, x, y);
+        function paint() {
+            var txt = display + score;
+            ctx.font = fontHeight + "px Arial";
+            ctx.fillStyle = color;
+            ctx.clearRect(x, y - fontHeight, ctx.measureText(txt).width, fontHeight);
+            ctx.fillText(txt, x, y);
         }
 
     }
@@ -235,8 +238,8 @@
 
         recPiece.update(mx, my);
         cirPiece.update(mx, my);
-        circleBoard.repaint(mx,my);
-        scoreBoard.repaint(mx,my);
+        circleBoard.repaint(mx, my);
+        scoreBoard.repaint(mx, my);
     }
 
 
@@ -245,7 +248,7 @@
         var newX = e.pageX - canvas.offsetLeft;
         var newY = e.pageY - canvas.offsetTop;
         recPiece.onMouseDown(newX, newY);
-        cirPiece.onMouseDown(newX, newY);  
+        cirPiece.onMouseDown(newX, newY);
     }
 
 
