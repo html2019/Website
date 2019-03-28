@@ -30,8 +30,8 @@
     var circleContainer = new CircleContainer();
     var recPiece = new Rectangle();
     var cirPiece = new Circle();
-    var recScoreBoard = new PieceScoreBoard(150, 480, "RecScore: ");
-    var cirScoreBoard = new PieceScoreBoard(400, 480, "CirScore: ");
+
+
 
     function Rectangle() {
         var width = 60;
@@ -43,6 +43,14 @@
         var draggable = false;
 
         paint(_x, _y);
+
+        this.drop=function () {
+            ctx.clearRect(_x, _y, width, height);
+            _y+=1;
+            paint(_x, _y);
+
+        };
+
         this.update = function (x, y) {
             if (draggable) {
                 ctx.clearRect(_x, _y, width, height);
@@ -50,6 +58,7 @@
                 _x = x;
                 _y = y;
             }
+
         };
         this.onMouseDown = function (x, y) {
             if (onTarget(x, y)) {
@@ -57,9 +66,14 @@
             }
         };
 
+        this.onMove = function (sx, sy) {
+            paint(_x, _y);
+        };
+
         function onTarget(x, y) {
             return x < _x + width && x > _x && y < _y + height && y > _y;
         };
+
         this.onScore = function (x, y) {
             draggable = false;
             _x = defaultX;
@@ -70,6 +84,7 @@
         this.isActive = function () {
             return draggable;
         };
+
 
         function paint(x, y) {
             ctx.fillStyle = color;
@@ -84,10 +99,14 @@
         var defaultX = 600;
         var defaultY = 60;
         var draggable = false;
-        var t0, s2;
-
         var _x = defaultX, _y = defaultY;
         paint(_x, _y);
+        this.drop=function () {
+            ctx.clearRect(_x - radius, _y - radius, 2 * radius, 2 * radius);
+            _y+=1;
+            paint(_x,_y);
+
+        };
         this.update = function (x, y) {
             if (draggable) {
                 ctx.clearRect(_x - radius, _y - radius, 2 * radius, 2 * radius);
@@ -95,24 +114,29 @@
                 _x = x;
                 _y = y;
             }
+
         };
 
         this.isActive = function () {
             return draggable;
         };
+
+
         this.onMouseDown = function (x, y) {
             if (x < _x + radius && x > _x - radius && y < _y + radius && y > _y - radius) {
                 draggable = true;
-                // There is no need for this line of code at all.
             }
         };
-        // This method should take two input paramaters, x and y. It should decide if x and y are within its area.
+        this.onMove = function (sx, sy) {
+            paint(_x, _y);
+        };
+
+
         this.onScore = function () {
             draggable = false;
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
-            // This method should return the type of shape.
         };
 
         function paint(x, y) {
@@ -134,20 +158,20 @@
         var rotation = 0;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
+        var score=0;
         paint();
 
         this.getScore = function (sx, sy) {
-            if (this.isOnScoreBoard(sx, sy)) {
+            if (this.isOnScoreBoard(sx, sy)&&recPiece.isActive()) {
                 recPiece.onScore(sx, sy);
-                recScoreBoard.update();
+                score += 1;
+                totalScore += 1;
                 updatScore(totalScore);
                 ctx.clearRect(x - radiusX, y - radiusY, 2 * radiusX, 3.5 * radiusY);
-                paint();
             }
         };
 
         this.onMove = function (sx, sy) {
-            console.log('onMove and repaint')
             paint();
         };
         this.isOnScoreBoard = function (sx, sy) {
@@ -155,6 +179,11 @@
         };
 
         function paint() {
+            var text=" "+score;
+            var fontHeight = 30;
+            var color = "black";
+            var textX=180;
+            var textY=370;
             ctx.beginPath();
             ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle);
             ctx.moveTo((x - radiusX), y);
@@ -164,6 +193,9 @@
             ctx.lineWidth = 4;
             ctx.strokeStyle = "orange";
             ctx.stroke();
+            ctx.font = fontHeight + "px Arial";
+            ctx.fillStyle = color;
+            ctx.fillText(text, textX, textY);
         };
     }
 
@@ -172,56 +204,51 @@
         var x = 450;
         var y = 370;
         var radius = 50;
-        ctx.beginPath();
         var width = 2 * radius;
         var height = 2 * radius;
-        // Use local variables to replace ALL magic numbers.
-        ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = "orange";
-        ctx.stroke();
+        var score=0;
+        paint();
         this.getScore = function (sx, sy) {
-            if (this.isOnScoreBoard(sx, sy)) {
-                cirScoreBoard.update();
+            if (this.isOnScoreBoard(sx, sy)&&cirPiece.isActive()) {
+                score += 1;
+                totalScore += 1;
                 updatScore(totalScore);
                 cirPiece.onScore();
                 ctx.clearRect(x - radius, y - radius, width, height);
-                repaint();
             }
+        };
+
+        this.onMove = function (sx, sy) {
+            console.log('onMove and repaint')
+            paint();
         };
 
         this.isOnScoreBoard = function (sx, sy) {
             return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
         };
 
-        function repaint() {
-            CircleContainer();
-        };
-    }
-
-
-    function PieceScoreBoard(x, y, displayText) {
-        var score = 0;
-        var fontHeight = 20;
-        var color = "black";
-        var display = displayText;
-        paint();
-        this.update = function () {
-            score += 1;
-            totalScore += 1;
-            paint();
-
-        };
-
         function paint() {
+            var text=" "+score;
+            var fontHeight = 30;
+            var color = "black";
+            var textX=440;
+            var textY=370;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "orange";
+            ctx.stroke();
             ctx.font = fontHeight + "px Arial";
-            var txt = display + score;
             ctx.fillStyle = color;
-            ctx.clearRect(x, y - fontHeight, ctx.measureText(txt).width, fontHeight);
-            ctx.fillText(txt, x, y);
+            ctx.fillText(text, textX, textY);
         };
+
     }
 
+    function startGame() {
+            recPiece.drop();
+            cirPiece.drop();
+    };
 
     function myMove(e) {
         var mx = e.pageX - canvas.offsetLeft;
@@ -229,14 +256,16 @@
 
 
         var pieces = [recPiece, cirPiece];
+        var container=[rectangleContainer,circleContainer];
+
 
         pieces.forEach(function (p) {
             p.update(mx, my)
-        })
+        });
 
-
-        rectangleContainer.onMove(mx, my);
-
+        (container.concat(pieces)).forEach(function (c) {
+            c.onMove(mx, my)
+        });
 
     }
 
@@ -245,10 +274,9 @@
         e.preventDefault();
         var newX = e.pageX - canvas.offsetLeft;
         var newY = e.pageY - canvas.offsetTop;
-        if (!rectangleContainer.isOnScoreBoard(newX, newY) && !circleContainer.isOnScoreBoard(newX, newY)) {
             recPiece.onMouseDown(newX, newY);
             cirPiece.onMouseDown(newX, newY);
-        }
+
     };
 
 
@@ -264,6 +292,36 @@
         circleContainer.getScore(cx, cy);
     };
 
+    function startTimer(duration, display) {
+        var start = Date.now(),
+            diff,
+            minutes,
+            seconds;
+        var clock=setInterval(timer, 1000);
+        function timer() {
+            diff = duration - (((Date.now() - start) / 1000) | 0);
+            minutes = parseInt(diff / 60);
+            seconds= (diff % 60) | 0;
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+            if (diff<=0) {
+                clearInterval(clock);
+                clearInterval(pieceMovingInterval);
+
+            }
+        }
+        timer();
+    }
+
+    function gameStartfunction () {
+        pieceMovingInterval=setInterval(startGame, 50);
+        var oneMinutes = 15 ,
+            display = document.querySelector('#time');
+        startTimer(oneMinutes, display);
+    };
 
 </script>
 </body>
