@@ -25,14 +25,13 @@
     canvas.onmouseup = myUp;
 
     var ctx = canvas.getContext("2d");
-    var diff, gInterval;
     var totalScore = 0;
-    var scoreBoard = new ScoreBoard();
-    var circleBoard = new CircleBoard();
+    var rectangleContainer = new RectangleContainer();
+    var circleContainer = new CircleContainer();
     var recPiece = new Rectangle();
     var cirPiece = new Circle();
-    var recScoreBoard=new pieceScoreBoard(150,480, "RecScore: ");
-    var cirScoreBoard=new pieceScoreBoard(400,480, "CirScore: ");
+    var recScoreBoard = new PieceScoreBoard(150, 480, "RecScore: ");
+    var cirScoreBoard = new PieceScoreBoard(400, 480, "CirScore: ");
 
     function Rectangle() {
         var width = 60;
@@ -41,11 +40,11 @@
         var defaultX = 25;
         var defaultY = 35;
         var _x = defaultX, _y = defaultY;
-        var draggable2 = false;
+        var draggable = false;
 
-        // This again is against OOP. Should use an instance varaible instead.
         paint(_x, _y);
-            if (draggable2) {
+        this.update = function (x, y) {
+            if (draggable) {
                 ctx.clearRect(_x, _y, width, height);
                 paint(x, y);
                 _x = x;
@@ -54,28 +53,29 @@
         };
         this.onMouseDown = function (x, y) {
             if (onTarget(x, y)) {
-                draggable2 = true;
-                // This should not be done here. It should be done in the onScore method.
+                draggable = true;
             }
         };
+
         function onTarget(x, y) {
             return x < _x + width && x > _x && y < _y + height && y > _y;
         };
-        this.onScore = function(x, y) {
-            var scored = onTarget(x, y);
-            if (scored) {
-                draggable2 = false;
-                _x = defaultX;
-                _y = defaultY;
-                paint(_x, _y);
-            }
-            return scored;
+        this.onScore = function (x, y) {
+            draggable = false;
+            _x = defaultX;
+            _y = defaultY;
+            paint(_x, _y);
         };
+
+        this.isActive = function () {
+            return draggable;
+        };
+
         function paint(x, y) {
             ctx.fillStyle = color;
             ctx.fillRect(x, y, width, height);
-        }
-    }
+        };
+    };
 
 
     function Circle() {
@@ -83,14 +83,13 @@
         var color = "blue";
         var defaultX = 600;
         var defaultY = 60;
-        var draggable1 = false;
+        var draggable = false;
+        var t0, s2;
+
         var _x = defaultX, _y = defaultY;
-        // This again is against OOP. There is no need for this variable if you let onScore to accept x and y coordinates.
-        // Deleted unused code.
-       // var cirShape=false;
         paint(_x, _y);
         this.update = function (x, y) {
-            if (draggable1) {
+            if (draggable) {
                 ctx.clearRect(_x - radius, _y - radius, 2 * radius, 2 * radius);
                 paint(x, y);
                 _x = x;
@@ -98,21 +97,23 @@
             }
         };
 
+        this.isActive = function () {
+            return draggable;
+        };
         this.onMouseDown = function (x, y) {
             if (x < _x + radius && x > _x - radius && y < _y + radius && y > _y - radius) {
-                draggable1 = true;
+                draggable = true;
                 // There is no need for this line of code at all.
             }
-
-        }
+        };
         // This method should take two input paramaters, x and y. It should decide if x and y are within its area.
         this.onScore = function () {
-            draggable1 = false;
+            draggable = false;
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
             // This method should return the type of shape.
-        }
+        };
 
         function paint(x, y) {
             ctx.beginPath();
@@ -123,7 +124,7 @@
     }
 
 
-    function ScoreBoard() {
+    function RectangleContainer() {
         var x = 200;
         var y = 350;
         var radiusX = 60;
@@ -133,103 +134,92 @@
         var rotation = 0;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
-        ctx.beginPath();
-        ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle);
-        ctx.moveTo((x - radiusX), y);
-        ctx.lineTo((x - radiusX), (y + h));
-        ctx.lineTo((x + radiusX), (y + h));
-        ctx.lineTo((x + radiusX), y);
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = "orange";
-        ctx.stroke();
+        paint();
 
         this.getScore = function (sx, sy) {
-            // shapeType
-            // Again this is a BAD violation of OOP. Why the board is telling the shape what to do???
             if (this.isOnScoreBoard(sx, sy)) {
+                recPiece.onScore(sx, sy);
                 recScoreBoard.update();
-
-                var recScored = recPiece.onScore(sx, sy);
-
-                // var cirScored = cirPiece.onScore(sx, sy);
-
-                if (recScored) {
-                    updatScore(totalScore);
-                }
-
-
-
-                ctx.clearRect(x-radiusX, y-radiusY, 2*radiusX, 3.5*radiusY);
-                repaint();
+                updatScore(totalScore);
+                ctx.clearRect(x - radiusX, y - radiusY, 2 * radiusX, 3.5 * radiusY);
+                paint();
             }
-        }
+        };
 
+        this.onMove = function (sx, sy) {
+            console.log('onMove and repaint')
+            paint();
+        };
         this.isOnScoreBoard = function (sx, sy) {
             return sx < x + boundaryWidth && sx > x - boundaryWidth && sy < y + boundaryWidth && sy > y - boundaryWidth;
-        }
+        };
 
-        function repaint() {
-            ScoreBoard();
-        }
+        function paint() {
+            ctx.beginPath();
+            ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle);
+            ctx.moveTo((x - radiusX), y);
+            ctx.lineTo((x - radiusX), (y + h));
+            ctx.lineTo((x + radiusX), (y + h));
+            ctx.lineTo((x + radiusX), y);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "orange";
+            ctx.stroke();
+        };
     }
 
 
-    function CircleBoard() {
+    function CircleContainer() {
         var x = 450;
         var y = 370;
         var radius = 50;
         ctx.beginPath();
-        var width=2*radius;
-        var height=2*radius;
+        var width = 2 * radius;
+        var height = 2 * radius;
         // Use local variables to replace ALL magic numbers.
         ctx.arc(x, y, radius, 0, 2 * Math.PI);
         ctx.lineWidth = 4;
         ctx.strokeStyle = "orange";
         ctx.stroke();
         this.getScore = function (sx, sy) {
-
             if (this.isOnScoreBoard(sx, sy)) {
                 cirScoreBoard.update();
                 updatScore(totalScore);
                 cirPiece.onScore();
-                // Use local variables to replace ALL magic numbers.
-                ctx.clearRect(x-radius, y-radius, width, height);
+                ctx.clearRect(x - radius, y - radius, width, height);
                 repaint();
             }
-        }
+        };
 
         this.isOnScoreBoard = function (sx, sy) {
             return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
-        }
+        };
 
         function repaint() {
-            CircleBoard();
-        }
+            CircleContainer();
+        };
     }
 
 
-    function pieceScoreBoard(x, y, displayText) {
+    function PieceScoreBoard(x, y, displayText) {
         var score = 0;
         var fontHeight = 20;
         var color = "black";
-        var display =displayText;
+        var display = displayText;
         paint();
         this.update = function () {
-            score+=1;
-            totalScore+=1;
-           paint();
+            score += 1;
+            totalScore += 1;
+            paint();
 
-        }
+        };
 
-        function paint(){
+        function paint() {
             ctx.font = fontHeight + "px Arial";
             var txt = display + score;
             ctx.fillStyle = color;
             ctx.clearRect(x, y - fontHeight, ctx.measureText(txt).width, fontHeight);
             ctx.fillText(txt, x, y);
-        }
-
-
+        };
     }
 
 
@@ -237,8 +227,17 @@
         var mx = e.pageX - canvas.offsetLeft;
         var my = e.pageY - canvas.offsetTop;
 
-        recPiece.update(mx, my);
-        cirPiece.update(mx, my);
+
+        var pieces = [recPiece, cirPiece];
+
+        pieces.forEach(function (p) {
+            p.update(mx, my)
+        })
+
+
+        rectangleContainer.onMove(mx, my);
+
+
     }
 
 
@@ -246,28 +245,24 @@
         e.preventDefault();
         var newX = e.pageX - canvas.offsetLeft;
         var newY = e.pageY - canvas.offsetTop;
-        if (!scoreBoard.isOnScoreBoard(newX, newY) && !circleBoard.isOnScoreBoard(newX, newY)) {
+        if (!rectangleContainer.isOnScoreBoard(newX, newY) && !circleContainer.isOnScoreBoard(newX, newY)) {
             recPiece.onMouseDown(newX, newY);
             cirPiece.onMouseDown(newX, newY);
         }
-    }
+    };
 
 
     function updatScore(totalScore) {
         document.getElementById("scoreBoard").innerHTML = totalScore;
-    }
+    };
 
 
     function myUp(e) {
         var cx = e.pageX - canvas.offsetLeft;
         var cy = e.pageY - canvas.offsetTop;
-       // var shapeType = e.currentTarget;
-       // console.log("shapeType", shapeType);
-        scoreBoard.getScore(cx, cy);
-        circleBoard.getScore(cx, cy);
-
-
-    }
+        rectangleContainer.getScore(cx, cy);
+        circleContainer.getScore(cx, cy);
+    };
 
 
 </script>
