@@ -20,23 +20,9 @@
 <button onClick="gameStartfunction ()">Start</button>
 <script>
     var canvas = document.getElementById("myCanvas");
-    var mouseEvents = ["mousedown", "mousemove"];
-    canvas.onmousedown = myDown;
     canvas.addEventListener("mousedown", myDown, false);
-
-    // functional programming
-    mouseEvents.forEach(canvas.removeEventListener);
-
-    // equivalent
-    mouseEvents.forEach(function(event) {
-        canvas.removeEventListener(event);
-    });
-
-    // canvas.onmousedown = null;
-
-
-    canvas.onmousemove = myMove;
-    canvas.onmouseup = myUp;
+    canvas.addEventListener("mousemove", myMove, false);
+    canvas.addEventListener("mouseup", myUp, false);
 
     var ctx = canvas.getContext("2d");
     var totalScore = 0;
@@ -53,24 +39,21 @@
         var defaultY = 35;
         var _x = defaultX, _y = defaultY;
         var draggable = false;
+        var timer = null;
 
         paint(_x, _y);
 
-        //this.interval=setInterval(this.autoDrop, 50);
-
-        this.drop = function () {
-            ctx.clearRect(_x, _y, width, height);
-            _y += 1;
-            paint(_x, _y);
+        this.autoDrop = function () {
+                timer = setInterval(function () {
+                    _draw(_x, _y + 1);
+                }, 50);
 
         };
 
-        this.update = function (x, y) {
+        this.updateOnDrag = function (x, y) {
             if (draggable) {
-                ctx.clearRect(_x, _y, width, height);
-                paint(x, y);
+                _draw(x, y);
                 _x = x;
-                _y = y;
             }
 
         };
@@ -89,10 +72,15 @@
         };
 
         this.onScore = function (x, y) {
+            if (timer) {
+                clearInterval(timer);
+            }
+
             draggable = false;
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
+            startGame();
         };
 
         this.isActive = function () {
@@ -100,10 +88,22 @@
         };
 
 
+        function _draw(x, y) {
+            ctx.clearRect(_x, _y, width, height);
+            paint(x, y);
+            _y = y;
+        }
+
         function paint(x, y) {
             ctx.fillStyle = color;
             ctx.fillRect(x, y, width, height);
         };
+
+        this.endGame=function(){
+
+            clearInterval(timer);
+        };
+
     };
 
 
@@ -116,7 +116,6 @@
         var width = 2 * radius;
         var height = 2 * radius;
         var startAngle = 0;
-        // Using the descriptive local name, endAngle, makes code easier to read, especially when someone is in a hurry.
         var endAngle = 2 * Math.PI;
         var _x = defaultX, _y = defaultY;
         var timer = null;
@@ -125,10 +124,12 @@
 
 
         this.autoDrop = function () {
-            // anonymous function = lambda (functional programming)
-            timer = setInterval(function() {
-                _draw(_x, _y + 1);
-            }, 50);
+
+                timer = setInterval(function () {
+                    _draw(_x, _y + 1);
+                }, 50);
+
+
         };
         this.updateOnDrag = function (x, y) {
             if (draggable) {
@@ -154,12 +155,10 @@
         };
 
         function onTarget(x, y) {
-            // This is good. I know you can do it.
             return Math.sqrt((x - _x) * (x - _x) + (y - _y) * (y - _y)) <= radius;
         };
 
         this.onScore = function () {
-            // null check (check for null value (defensive coding)
             if (timer) {
                 clearInterval(timer);
             }
@@ -168,6 +167,7 @@
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
+            startGame();
 
         };
 
@@ -183,6 +183,12 @@
             ctx.fillStyle = color;
             ctx.fill();
         }
+
+        this.endGame=function(){
+
+                clearInterval(timer);
+
+        };
     }
 
 
@@ -206,23 +212,16 @@
                 recPiece.onScore(sx, sy);
                 score += 1;
                 totalScore += 1;
-                updatScore(totalScore);
-                ctx.clearRect(x - radiusX, y - radiusY, width, height);
-                /*ReferenceError: recInterval is not defined[Learn More] DragGame5.html:185:17
-                getScore http://localhost:63342/Website/DragGame5.html?_ijt=f35r9j4kk86s5nbr5qh01qv2je:185
-                    myUp http://localhost:63342/Website/DragGame5.html?_ijt=f35r9j4kk86s5nbr5qh01qv2je:315
-                    */
-                if (recInterval) {
-                    clearInterval(recInterval);
-                }
+                updateScore(totalScore);
+                ctx.clearRect(x - radiusX, y - radiusY, width, height)
+            };
 
-                startGame();
-            }
         };
 
         this.onMove = function (sx, sy) {
             paint();
         };
+
         this.isOnScoreBoard = function (sx, sy) {
             return sx < x + boundaryWidth && sx > x - boundaryWidth && sy < y + boundaryWidth && sy > y - boundaryWidth;
         };
@@ -263,11 +262,10 @@
             if (this.isOnScoreBoard(sx, sy) && cirPiece.isActive()) {
                 score += 1;
                 totalScore += 1;
-                updatScore(totalScore);
+                updateScore(totalScore);
                 cirPiece.onScore();
                 ctx.clearRect(x - radius, y - radius, width, height);
-                clearInterval(cirInterval);
-                startGame();
+
             }
         };
 
@@ -301,14 +299,12 @@
 
         var randomNumber = Math.random();
         if (0 < randomNumber && randomNumber < 0.5) {
-            recPiece.drop();
-            // The timer should be started inside the rectangle object.
-            recInterval = setInterval(recPiece.drop, 50);
+            recPiece.autoDrop();
+
         }
         else {
             cirPiece.autoDrop();
-            // The timer should be started inside the circle object.
-            cirInterval = setInterval(cirPiece.autoDrop, 50);
+
         }
 
     };
@@ -323,7 +319,7 @@
 
 
         pieces.forEach(function (p) {
-            p.update(mx, my)
+            p.updateOnDrag(mx, my)
         });
 
         container.concat(pieces).forEach(function (c) {
@@ -350,24 +346,25 @@
         circleContainer.getScore(cx, cy);
     };
 
-    function updatScore(totalScore) {
+    function updateScore(totalScore) {
         document.getElementById("scoreBoard").innerHTML = totalScore;
     };
 
 
     function startTimer(duration, display) {
-        var start = Date.now(),
-            diff,
-            minutes,
-            seconds;
-        // There are less magic numbers in this version. But here we still have some. Replace with local variables with
-        // descriptive names.
-        var clock = setInterval(timer, 1000);
+        var start = Date.now();
+        var diff;
+        var minutes;
+        var seconds;
+        var mileSecondFactor=1000;
+        var secondFactor=60;
+        var minutesFactor=60;
+        var clock = setInterval(timer, mileSecondFactor);
 
         function timer() {
-            diff = duration - (((Date.now() - start) / 1000) | 0);
-            minutes = parseInt(diff / 60);
-            seconds = (diff % 60) | 0;
+            diff = duration - (((Date.now() - start) / mileSecondFactor) | 0);
+            minutes = parseInt(diff / minutesFactor);
+            seconds = (diff % secondFactor) | 0;
 
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
@@ -375,6 +372,13 @@
             display.textContent = minutes + ":" + seconds;
             if (diff <= 0) {
                 clearInterval(clock);
+                //addEventListerner and removeEventListener need at leasr two parameters, how to us foreach function?
+                canvas.removeEventListener("mousedown", myDown);
+                canvas.removeEventListener("mousemove", myMove);
+                canvas.removeEventListener("mouseup", myUp);
+                //endGame can't clear interval
+                recPiece.endGame();
+                cirPiece.endGame();
 
             }
         }
@@ -385,7 +389,6 @@
     function gameStartfunction() {
         startGame();
         var oneMinutes = 15;
-        // It is not a good practice to define multiple variables on the same line.
         var display = document.querySelector('#time');
         startTimer(oneMinutes, display);
     };
