@@ -31,6 +31,24 @@
     var recPiece = new Rectangle();
     var cirPiece = new Circle();
 
+
+    function ShapeTimer(drawFn) {
+        console.log("drawFn", drawFn);
+        var _drawFn = drawFn;
+        this.start = function (x, y) {
+            this.timer = setInterval(function () {
+                console.log('autoDrop within timer');
+                _drawFn(x, y);
+            }, 50);
+        };
+        this.end = function () {
+            console.log("End timer", this.timer);
+            if (this.timer) {
+                clearInterval(this.timer);
+            }
+        };
+    }
+
     function Rectangle() {
         var width = 60;
         var height = 60;
@@ -39,20 +57,17 @@
         var defaultY = 35;
         var _x = defaultX, _y = defaultY;
         var draggable = false;
-        var timer = null;
+
 
         paint(_x, _y);
 
         this.autoDrop = function () {
-                timer = setInterval(function () {
-                    _draw(_x, _y + 1);
-                }, 50);
-
+            timer.start(_x, _y + 1)
         };
 
         this.updateOnDrag = function (x, y) {
             if (draggable) {
-                _draw(x, y);
+                this.draw(x, y);
                 _x = x;
             }
 
@@ -72,10 +87,7 @@
         };
 
         this.onScore = function (x, y) {
-            if (timer) {
-                clearInterval(timer);
-            }
-
+            timer.end();
             draggable = false;
             _x = defaultX;
             _y = defaultY;
@@ -88,7 +100,7 @@
         };
 
 
-        function _draw(x, y) {
+        this.draw = function (x, y) {
             ctx.clearRect(_x, _y, width, height);
             paint(x, y);
             _y = y;
@@ -100,11 +112,10 @@
         };
 
         this.endGame=function(){
-            console.log('end game', timer);
-            if (timer) {
-                clearInterval(timer);
-            }
+            timer.end();
         };
+
+        var timer = new ShapeTimer(this.draw);
 
     };
 
@@ -120,22 +131,19 @@
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
         var _x = defaultX, _y = defaultY;
-        var timer = null;
+
 
         paint(_x, _y);
 
 
         this.autoDrop = function () {
 
-                timer = setInterval(function () {
-                    _draw(_x, _y + 1);
-                }, 50);
-
+            timer.start(_x, _y + 1)
 
         };
         this.updateOnDrag = function (x, y) {
             if (draggable) {
-                _draw(x, y);
+                this.draw(x, y);
                 _x = x;
             }
 
@@ -161,9 +169,7 @@
         };
 
         this.onScore = function () {
-            if (timer) {
-                clearInterval(timer);
-            }
+            timer.end();
             draggable = false;
 
             _x = defaultX;
@@ -173,7 +179,7 @@
 
         };
 
-        function _draw(x, y) {
+        this.draw = function (x, y) {
             ctx.clearRect(_x - radius, _y - radius, width, height);
             paint(x, y);
             _y = y;
@@ -187,12 +193,10 @@
         }
 
         this.endGame=function(){
-            console.log('end game', timer);
-            if (timer) {
-                clearInterval(timer);
-            }
-
+            timer.end();
         };
+
+        var timer = new ShapeTimer(this.draw);
     }
 
 
