@@ -44,6 +44,8 @@
 
         paint(_x, _y);
 
+        //this.interval=setInterval(this.drop, 50);
+
         this.drop=function () {
             ctx.clearRect(_x, _y, width, height);
             _y+=1;
@@ -99,17 +101,23 @@
         var defaultX = 600;
         var defaultY = 60;
         var draggable = false;
+        var width=2 * radius;
+        var height=2 * radius;
+        var startAngle = 0;
+        var endAngle = 2 * Math.PI;
         var _x = defaultX, _y = defaultY;
         paint(_x, _y);
+
+
         this.drop=function () {
-            ctx.clearRect(_x - radius, _y - radius, 2 * radius, 2 * radius);
+            ctx.clearRect(_x - radius, _y - radius, width, height);
             _y+=1;
             paint(_x,_y);
 
         };
         this.update = function (x, y) {
             if (draggable) {
-                ctx.clearRect(_x - radius, _y - radius, 2 * radius, 2 * radius);
+                ctx.clearRect(_x - radius, _y - radius, width, height);
                 paint(x, y);
                 _x = x;
                 _y = y;
@@ -123,14 +131,18 @@
 
 
         this.onMouseDown = function (x, y) {
-            if (x < _x + radius && x > _x - radius && y < _y + radius && y > _y - radius) {
+            if (onTarget(x, y)) {
                 draggable = true;
+
             }
         };
         this.onMove = function (sx, sy) {
             paint(_x, _y);
         };
 
+        function onTarget(x, y) {
+            return  Math.sqrt((x-_x)*(x-_x) + (y-_y)*(y-_y)) <= radius;
+        };
 
         this.onScore = function () {
             draggable = false;
@@ -141,7 +153,7 @@
 
         function paint(x, y) {
             ctx.beginPath();
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.arc(x, y, radius, startAngle, endAngle);
             ctx.fillStyle = color;
             ctx.fill();
         }
@@ -158,6 +170,8 @@
         var rotation = 0;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
+        var width=2 * radiusX;
+        var height=3.5 * radiusY;
         var score=0;
         paint();
 
@@ -167,7 +181,9 @@
                 score += 1;
                 totalScore += 1;
                 updatScore(totalScore);
-                ctx.clearRect(x - radiusX, y - radiusY, 2 * radiusX, 3.5 * radiusY);
+                ctx.clearRect(x - radiusX, y - radiusY, width, height);
+                clearInterval(recInterval);
+                startGame();
             }
         };
 
@@ -206,6 +222,8 @@
         var radius = 50;
         var width = 2 * radius;
         var height = 2 * radius;
+        var startAngle = 0;
+        var endAngle = 2 * Math.PI;
         var score=0;
         paint();
         this.getScore = function (sx, sy) {
@@ -215,11 +233,12 @@
                 updatScore(totalScore);
                 cirPiece.onScore();
                 ctx.clearRect(x - radius, y - radius, width, height);
+                clearInterval(cirInterval);
+                startGame();
             }
         };
 
         this.onMove = function (sx, sy) {
-            console.log('onMove and repaint')
             paint();
         };
 
@@ -234,7 +253,7 @@
             var textX=440;
             var textY=370;
             ctx.beginPath();
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.arc(x, y, radius, startAngle, endAngle);
             ctx.lineWidth = 4;
             ctx.strokeStyle = "orange";
             ctx.stroke();
@@ -246,8 +265,18 @@
     }
 
     function startGame() {
+
+        var randomNumber=Math.random();
+        if(0<randomNumber&&randomNumber<0.5){
             recPiece.drop();
+            recInterval=setInterval(recPiece.drop, 50);
+            }
+
+        else {
             cirPiece.drop();
+            cirInterval=setInterval(cirPiece.drop, 50);
+            }
+
     };
 
     function myMove(e) {
@@ -280,17 +309,17 @@
     };
 
 
-    function updatScore(totalScore) {
-        document.getElementById("scoreBoard").innerHTML = totalScore;
-    };
-
-
     function myUp(e) {
         var cx = e.pageX - canvas.offsetLeft;
         var cy = e.pageY - canvas.offsetTop;
         rectangleContainer.getScore(cx, cy);
         circleContainer.getScore(cx, cy);
     };
+
+    function updatScore(totalScore) {
+        document.getElementById("scoreBoard").innerHTML = totalScore;
+    };
+
 
     function startTimer(duration, display) {
         var start = Date.now(),
@@ -309,7 +338,6 @@
             display.textContent = minutes + ":" + seconds;
             if (diff<=0) {
                 clearInterval(clock);
-                clearInterval(pieceMovingInterval);
 
             }
         }
@@ -317,7 +345,7 @@
     }
 
     function gameStartfunction () {
-        pieceMovingInterval=setInterval(startGame, 50);
+        startGame();
         var oneMinutes = 15 ,
             display = document.querySelector('#time');
         startTimer(oneMinutes, display);
