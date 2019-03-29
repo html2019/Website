@@ -104,6 +104,7 @@
         var width=2 * radius;
         var height=2 * radius;
         var startAngle = 0;
+        // Using the descriptive local name, endAngle, makes code easier to read, especially when someone is in a hurry.
         var endAngle = 2 * Math.PI;
         var _x = defaultX, _y = defaultY;
         paint(_x, _y);
@@ -141,6 +142,7 @@
         };
 
         function onTarget(x, y) {
+            // This is good. I know you can do it.
             return  Math.sqrt((x-_x)*(x-_x) + (y-_y)*(y-_y)) <= radius;
         };
 
@@ -182,6 +184,10 @@
                 totalScore += 1;
                 updatScore(totalScore);
                 ctx.clearRect(x - radiusX, y - radiusY, width, height);
+                /*ReferenceError: recInterval is not defined[Learn More] DragGame5.html:185:17
+                getScore http://localhost:63342/Website/DragGame5.html?_ijt=f35r9j4kk86s5nbr5qh01qv2je:185
+                    myUp http://localhost:63342/Website/DragGame5.html?_ijt=f35r9j4kk86s5nbr5qh01qv2je:315
+                    */
                 clearInterval(recInterval);
                 startGame();
             }
@@ -326,6 +332,8 @@
             diff,
             minutes,
             seconds;
+        // There are less magic numbers in this version. But here we still have some. Replace with local variables with
+        // descriptive names.
         var clock=setInterval(timer, 1000);
         function timer() {
             diff = duration - (((Date.now() - start) / 1000) | 0);
@@ -346,8 +354,9 @@
 
     function gameStartfunction () {
         startGame();
-        var oneMinutes = 15 ,
-            display = document.querySelector('#time');
+        var oneMinutes = 15;
+        // It is not a good practice to define multiple variables on the same line.
+        var display = document.querySelector('#time');
         startTimer(oneMinutes, display);
     };
 
