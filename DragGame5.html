@@ -20,10 +20,6 @@
 <button onClick="gameStartfunction ()">Start</button>
 <script>
     var canvas = document.getElementById("myCanvas");
-    canvas.addEventListener("mousedown", myDown, false);
-    canvas.addEventListener("mousemove", myMove, false);
-    canvas.addEventListener("mouseup", myUp, false);
-
     var ctx = canvas.getContext("2d");
     var totalScore = 0;
     var rectangleContainer = new RectangleContainer();
@@ -215,7 +211,8 @@
                 score += 1;
                 totalScore += 1;
                 updateScore(totalScore);
-                ctx.clearRect(x - radiusX, y - radiusY, width, height)
+                ctx.clearRect(x - radiusX, y - radiusY, width, height);
+                paint();
             };
 
         };
@@ -267,6 +264,7 @@
                 updateScore(totalScore);
                 cirPiece.onScore();
                 ctx.clearRect(x - radius, y - radius, width, height);
+                paint();
 
             }
         };
@@ -374,11 +372,9 @@
             display.textContent = minutes + ":" + seconds;
             if (diff <= 0) {
                 clearInterval(clock);
-                //addEventListerner and removeEventListener need at leasr two parameters, how to us foreach function?
                 canvas.removeEventListener("mousedown", myDown);
                 canvas.removeEventListener("mousemove", myMove);
                 canvas.removeEventListener("mouseup", myUp);
-                //endGame can't clear interval
                 recPiece.endGame();
                 cirPiece.endGame();
 
@@ -390,6 +386,9 @@
 
     function gameStartfunction() {
         startGame();
+        canvas.addEventListener("mousedown", myDown, false);
+        canvas.addEventListener("mousemove", myMove, false);
+        canvas.addEventListener("mouseup", myUp, false);
         var oneMinutes = 15;
         var display = document.querySelector('#time');
         startTimer(oneMinutes, display);
