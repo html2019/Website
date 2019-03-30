@@ -46,7 +46,7 @@
         paint(_x, _y);
 
         this.autoDrop = function () {
-            // What if the timer is null?
+            // What if the timer is null? Defensive coding???
             // clearInterval(timer);
             timer = setInterval(function () {
                 _draw(_x, _y + 1);
@@ -74,14 +74,19 @@
             return x < _x + width && x > _x && y < _y + height && y > _y;
         };
 
+        // declarative vs imperative -> functional programming, aspect oriented programming (aop).
         this.onScore = function (x, y) {
-            if (timer) {
-                clearInterval(timer);
-            }
+            clearTimer();
+            // if (timer) {
+            //     clearInterval(timer);
+            // }
 
-            draggable = false;
-            _x = defaultX;
-            _y = defaultY;
+            upateDraggable();
+            updateCoordinate();
+
+            // draggable = false;
+            // _x = defaultX;
+            // _y = defaultY;
             paint(_x, _y);
             // Every time startGame is called, a new timer is created. This is buggy.
             // startGame();
@@ -107,11 +112,15 @@
 
         this.endGame = function () {
             console.log('end game', timer);
+            clearTimer();
+        }
+
+        function clearTimer() {
             if (timer) {
                 clearInterval(timer);
                 timer = null;
             }
-        };
+        }
 
     };
 
@@ -131,7 +140,7 @@
 
         paint(_x, _y);
 
-        var randomNumber = Math.random();
+        // var randomNumber = Math.random();
 
         this.autoDrop = function () {
             // What if the timer is null?
@@ -139,7 +148,6 @@
             timer = setInterval(function () {
                 _draw(_x, _y + 1);
             }, 50);
-
         };
         this.updateOnDrag = function (x, y) {
             if (draggable) {
@@ -175,7 +183,7 @@
             paint(_x, _y);
             // Every time startGame is called, a new timer is created. This is buggy.
 
-            if (randomNumber >= 0.5) {
+            if (Math.random() >= 0.5) {
                 this.autoDrop();
                 // startGame();
             }
@@ -236,8 +244,6 @@
                 paint();
 
             }
-            ;
-
         };
 
         this.onMove = function (sx, sy) {
@@ -321,18 +327,28 @@
 
     }
 
-    // function startGame() {
-    //
-    //     if (0 < randomNumber && randomNumber < 0.5) {
-    //         recPiece.autoDrop();
-    //
-    //     }
-    //     else {
-    //         cirPiece.autoDrop();
-    //
-    //     }
-    //
-    // };
+    function startGame() {
+
+        if (0 < randomNumber && randomNumber < 0.5) {
+
+            pieces.forEach(function (p) {
+                p.updateOnDrag(mx, my)
+            });
+
+            containers.forEach()
+            //
+            // recPiece.autoDrop(randomNumber);
+
+        }
+        else if (...) {
+            // cirPiece.autoDrop();
+        // }
+        else {
+
+            // ...
+        }
+
+    };
 
     function myMove(e) {
         var mx = e.pageX - canvas.offsetLeft;
