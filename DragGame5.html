@@ -31,6 +31,10 @@
     var recPiece = new Rectangle();
     var cirPiece = new Circle();
 
+    var pieces = [recPiece, cirPiece];
+    var containers = [rectangleContainer, circleContainer];
+
+
     function Rectangle() {
         var width = 60;
         var height = 60;
@@ -188,6 +192,7 @@
 
         this.endGame = function () {
             if (timer) {
+
                 clearInterval(timer);
             }
         };
@@ -215,7 +220,8 @@
                 score += 1;
                 totalScore += 1;
                 updateScore(totalScore);
-                ctx.clearRect(x - radiusX, y - radiusY, width, height)
+                ctx.clearRect(x - radiusX, y - radiusY, width, height);
+                paint();
             };
 
         };
@@ -267,7 +273,7 @@
                 updateScore(totalScore);
                 cirPiece.onScore();
                 ctx.clearRect(x - radius, y - radius, width, height);
-
+                paint();
             }
         };
 
@@ -316,15 +322,13 @@
         var my = e.pageY - canvas.offsetTop;
 
 
-        var pieces = [recPiece, cirPiece];
-        var container = [rectangleContainer, circleContainer];
 
 
         pieces.forEach(function (p) {
             p.updateOnDrag(mx, my)
         });
 
-        container.concat(pieces).forEach(function (c) {
+        containers.concat(pieces).forEach(function (c) {
             c.onMove(mx, my)
         });
 
@@ -344,8 +348,10 @@
     function myUp(e) {
         var cx = e.pageX - canvas.offsetLeft;
         var cy = e.pageY - canvas.offsetTop;
-        rectangleContainer.getScore(cx, cy);
-        circleContainer.getScore(cx, cy);
+        containers.forEach(function (c) {
+            c.getScore(cx, cy)
+        });
+
     };
 
     function updateScore(totalScore) {
