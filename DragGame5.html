@@ -15,9 +15,9 @@
 
 <canvas id="myCanvas" width="680px" height="500px">
 </canvas>
-<div>Time Remaining <span id="time"></span></div>
-<div>Total Score: <span id="scoreBoard"></span></div>
-<button onClick="gameStartfunction ()">Start</button>
+<div><b>Time Remaining: <span id="time"></span></b></div>
+<div><b>Total Score: <span id="scoreBoard"></span></b></div>
+<button onClick="gameStartfunction()" style="width:80px; height: 30px"><b>Start</b></button>
 <script>
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
@@ -28,6 +28,7 @@
     var cirPiece = new Circle();
     var pieces = [recPiece, cirPiece];
     var containers = [rectangleContainer, circleContainer];
+    //var randomNumber;
 
 
 
@@ -85,6 +86,7 @@
             paint(_x, _y);
             // Every time startGame is called, a new timer is created. This is buggy.
             // startGame();
+           // randomNumber = Math.random();
             if (0 <= randomNumber && randomNumber < 0.5) {
                 this.autoDrop();
             }
@@ -174,7 +176,7 @@
             _y = defaultY;
             paint(_x, _y);
             // Every time startGame is called, a new timer is created. This is buggy.
-
+           // randomNumber = Math.random();
             if (randomNumber >= 0.5) {
                 this.autoDrop();
                 // startGame();
@@ -409,10 +411,11 @@
 
     function gameStartfunction() {
         // startGame();
+        //randomNumber = Math.random();
         canvas.addEventListener("mousedown", myDown, false);
         canvas.addEventListener("mousemove", myMove, false);
         canvas.addEventListener("mouseup", myUp, false);
-        var oneMinutes = 15;
+        var oneMinutes = 30;
         var display = document.querySelector('#time');
         startTimer(oneMinutes, display);
     };
