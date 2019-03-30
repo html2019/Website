@@ -26,6 +26,9 @@
     var circleContainer = new CircleContainer();
     var recPiece = new Rectangle();
     var cirPiece = new Circle();
+    var pieces = [recPiece, cirPiece];
+    var containers = [rectangleContainer, circleContainer];
+
 
     function Rectangle() {
         var width = 60;
@@ -186,6 +189,7 @@
 
         this.endGame = function () {
             if (timer) {
+
                 clearInterval(timer);
             }
         };
@@ -228,8 +232,9 @@
         };
 
         this.isOnScoreBoard = function (sx, sy) {
-            return sx < x+rightBoundaryWidth  && sx > x - leftBoundaryWidth && sy < y + bottomBoundaryHeight && sy > y - topBoundaryHeight;
-            //return Math.sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y)) <= radius;
+            return sx < x+rightBoundaryWidth  && sx > x - leftBoundaryWidth &&
+                sy < y + bottomBoundaryHeight && sy > y - topBoundaryHeight;
+
         };
 
         function paint() {
@@ -274,7 +279,6 @@
                 ctx.clearRect(x - radius, y - radius, width, height);
                 paint();
 
-
             }
         };
 
@@ -283,7 +287,6 @@
         };
 
         this.isOnScoreBoard = function (sx, sy) {
-            //return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
             return Math.sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y)) < scoreRadius;
         };
 
@@ -324,15 +327,13 @@
         var my = e.pageY - canvas.offsetTop;
 
 
-        var pieces = [recPiece, cirPiece];
-        var container = [rectangleContainer, circleContainer];
 
 
         pieces.forEach(function (p) {
             p.updateOnDrag(mx, my)
         });
 
-        container.concat(pieces).forEach(function (c) {
+        containers.concat(pieces).forEach(function (c) {
             c.onMove(mx, my)
         });
 
@@ -352,8 +353,10 @@
     function myUp(e) {
         var cx = e.pageX - canvas.offsetLeft;
         var cy = e.pageY - canvas.offsetTop;
-        rectangleContainer.getScore(cx, cy);
-        circleContainer.getScore(cx, cy);
+        containers.forEach(function (c) {
+            c.getScore(cx, cy)
+        });
+
     };
 
     function updateScore(totalScore) {
