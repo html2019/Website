@@ -40,9 +40,10 @@
         paint(_x, _y);
 
         this.autoDrop = function () {
-            timer = setInterval(function () {
-                _draw(_x, _y + 1);
-            }, 50);
+                clearInterval(timer);
+                timer = setInterval(function () {
+                    _draw(_x, _y + 1);
+                }, 50);
 
         };
 
@@ -77,6 +78,7 @@
             _y = defaultY;
             paint(_x, _y);
             startGame();
+
         };
 
         this.isActive = function () {
@@ -122,11 +124,10 @@
 
 
         this.autoDrop = function () {
-
+            clearInterval(timer);
             timer = setInterval(function () {
                 _draw(_x, _y + 1);
             }, 50);
-
 
         };
         this.updateOnDrag = function (x, y) {
@@ -135,10 +136,6 @@
                 _x = x;
             }
 
-        };
-
-        this.isActive = function () {
-            return draggable;
         };
 
 
@@ -167,6 +164,11 @@
             paint(_x, _y);
             startGame();
 
+
+        };
+
+        this.isActive = function () {
+            return draggable;
         };
 
         function _draw(x, y) {
@@ -196,7 +198,10 @@
         var radiusX = 60;
         var radiusY = 30;
         var h = 70;
-        var boundaryWidth = 40;
+        var rightBoundaryWidth = 0;
+        var leftBoundaryWidth=45;
+        var topBoundaryHeight=20;
+        var bottomBoundaryHeight=30;
         var rotation = 0;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
@@ -213,6 +218,7 @@
                 updateScore(totalScore);
                 ctx.clearRect(x - radiusX, y - radiusY, width, height);
                 paint();
+
             };
 
         };
@@ -222,7 +228,8 @@
         };
 
         this.isOnScoreBoard = function (sx, sy) {
-            return sx < x + boundaryWidth && sx > x - boundaryWidth && sy < y + boundaryWidth && sy > y - boundaryWidth;
+            return sx < x+rightBoundaryWidth  && sx > x - leftBoundaryWidth && sy < y + bottomBoundaryHeight && sy > y - topBoundaryHeight;
+            //return Math.sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y)) <= radius;
         };
 
         function paint() {
@@ -251,6 +258,7 @@
         var x = 450;
         var y = 370;
         var radius = 50;
+        var scoreRadius=10;
         var width = 2 * radius;
         var height = 2 * radius;
         var startAngle = 0;
@@ -266,6 +274,7 @@
                 ctx.clearRect(x - radius, y - radius, width, height);
                 paint();
 
+
             }
         };
 
@@ -274,7 +283,8 @@
         };
 
         this.isOnScoreBoard = function (sx, sy) {
-            return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
+            //return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
+            return Math.sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y)) < scoreRadius;
         };
 
         function paint() {
