@@ -30,7 +30,10 @@
     var containers = [rectangleContainer, circleContainer];
 
 
+
     function Rectangle() {
+        var randomNumber = Math.random();
+
         var width = 60;
         var height = 60;
         var color = "red";
@@ -44,10 +47,10 @@
 
         this.autoDrop = function () {
             // What if the timer is null?
-            clearInterval(timer);
-                timer = setInterval(function () {
-                    _draw(_x, _y + 1);
-                }, 50);
+            // clearInterval(timer);
+            timer = setInterval(function () {
+                _draw(_x, _y + 1);
+            }, 50);
 
         };
 
@@ -56,7 +59,6 @@
                 _draw(x, y);
                 _x = x;
             }
-
         };
         this.onMouseDown = function (x, y) {
             if (onTarget(x, y)) {
@@ -82,10 +84,11 @@
             _y = defaultY;
             paint(_x, _y);
             // Every time startGame is called, a new timer is created. This is buggy.
-            startGame();
-
-        };
-
+            // startGame();
+            if (0 <= randomNumber && randomNumber < 0.5) {
+                this.autoDrop();
+            }
+        }
         this.isActive = function () {
             return draggable;
         };
@@ -106,6 +109,7 @@
             console.log('end game', timer);
             if (timer) {
                 clearInterval(timer);
+                timer = null;
             }
         };
 
@@ -127,10 +131,11 @@
 
         paint(_x, _y);
 
+        var randomNumber = Math.random();
 
         this.autoDrop = function () {
             // What if the timer is null?
-            clearInterval(timer);
+            // clearInterval(timer);
             timer = setInterval(function () {
                 _draw(_x, _y + 1);
             }, 50);
@@ -169,8 +174,11 @@
             _y = defaultY;
             paint(_x, _y);
             // Every time startGame is called, a new timer is created. This is buggy.
-            startGame();
 
+            if (randomNumber >= 0.5) {
+                this.autoDrop();
+                // startGame();
+            }
 
         };
 
@@ -193,8 +201,8 @@
 
         this.endGame = function () {
             if (timer) {
-
                 clearInterval(timer);
+                timer = null;
             }
         };
     }
@@ -207,9 +215,9 @@
         var radiusY = 30;
         var h = 70;
         var rightBoundaryWidth = 0;
-        var leftBoundaryWidth=45;
-        var topBoundaryHeight=20;
-        var bottomBoundaryHeight=30;
+        var leftBoundaryWidth = 45;
+        var topBoundaryHeight = 20;
+        var bottomBoundaryHeight = 30;
         var rotation = 0;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
@@ -227,7 +235,8 @@
                 ctx.clearRect(x - radiusX, y - radiusY, width, height);
                 paint();
 
-            };
+            }
+            ;
 
         };
 
@@ -236,7 +245,7 @@
         };
 
         this.isOnScoreBoard = function (sx, sy) {
-            return sx < x+rightBoundaryWidth  && sx > x - leftBoundaryWidth &&
+            return sx < x + rightBoundaryWidth && sx > x - leftBoundaryWidth &&
                 sy < y + bottomBoundaryHeight && sy > y - topBoundaryHeight;
 
         };
@@ -267,7 +276,7 @@
         var x = 450;
         var y = 370;
         var radius = 50;
-        var scoreRadius=10;
+        var scoreRadius = 10;
         var width = 2 * radius;
         var height = 2 * radius;
         var startAngle = 0;
@@ -312,25 +321,22 @@
 
     }
 
-    function startGame() {
-
-        var randomNumber = Math.random();
-        if (0 < randomNumber && randomNumber < 0.5) {
-            recPiece.autoDrop();
-
-        }
-        else {
-            cirPiece.autoDrop();
-
-        }
-
-    };
+    // function startGame() {
+    //
+    //     if (0 < randomNumber && randomNumber < 0.5) {
+    //         recPiece.autoDrop();
+    //
+    //     }
+    //     else {
+    //         cirPiece.autoDrop();
+    //
+    //     }
+    //
+    // };
 
     function myMove(e) {
         var mx = e.pageX - canvas.offsetLeft;
         var my = e.pageY - canvas.offsetTop;
-
-
 
 
         pieces.forEach(function (p) {
@@ -402,7 +408,7 @@
     }
 
     function gameStartfunction() {
-        startGame();
+        // startGame();
         canvas.addEventListener("mousedown", myDown, false);
         canvas.addEventListener("mousemove", myMove, false);
         canvas.addEventListener("mouseup", myUp, false);
