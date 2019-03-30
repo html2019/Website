@@ -43,7 +43,8 @@
         paint(_x, _y);
 
         this.autoDrop = function () {
-                clearInterval(timer);
+            // What if the timer is null?
+            clearInterval(timer);
                 timer = setInterval(function () {
                     _draw(_x, _y + 1);
                 }, 50);
@@ -80,6 +81,7 @@
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
+            // Every time startGame is called, a new timer is created. This is buggy.
             startGame();
 
         };
@@ -127,6 +129,7 @@
 
 
         this.autoDrop = function () {
+            // What if the timer is null?
             clearInterval(timer);
             timer = setInterval(function () {
                 _draw(_x, _y + 1);
@@ -165,6 +168,7 @@
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
+            // Every time startGame is called, a new timer is created. This is buggy.
             startGame();
 
 
