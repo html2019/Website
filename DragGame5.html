@@ -18,6 +18,7 @@
 <div><b>Time Remaining: <span id="time"></span></b></div>
 <div><b>Total Score: <span id="scoreBoard"></span></b></div>
 <button onClick="gameStartfunction()" style="width:80px; height: 30px"><b>Start</b></button>
+
 <script>
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
@@ -28,72 +29,64 @@
     var cirPiece = new Circle();
     var pieces = [recPiece, cirPiece];
     var containers = [rectangleContainer, circleContainer];
-    //var randomNumber;
-
-
 
     function Rectangle() {
-        var randomNumber = Math.random();
-
+        var randomNumber;
         var width = 60;
         var height = 60;
         var color = "red";
         var defaultX = 25;
         var defaultY = 35;
-        var _x = defaultX, _y = defaultY;
+        var _x = defaultX;
+        var _y = defaultY;
         var draggable = false;
         var timer = null;
 
         paint(_x, _y);
 
         this.autoDrop = function () {
-            // What if the timer is null?
-            // clearInterval(timer);
+            clearTimer();
             timer = setInterval(function () {
                 _draw(_x, _y + 1);
             }, 50);
-
-        };
+        }
 
         this.updateOnDrag = function (x, y) {
             if (draggable) {
                 _draw(x, y);
                 _x = x;
             }
-        };
-        this.onMouseDown = function (x, y) {
+        }
+
+        this.dragStart = function (x, y) {
             if (onTarget(x, y)) {
                 draggable = true;
             }
-        };
+        }
 
-        this.onMove = function (sx, sy) {
+        this.restoreOnMove = function (sx, sy) {
             paint(_x, _y);
-        };
+        }
 
         function onTarget(x, y) {
             return x < _x + width && x > _x && y < _y + height && y > _y;
-        };
+        }
 
         this.onScore = function (x, y) {
-            if (timer) {
-                clearInterval(timer);
-            }
-
+            clearTimer();
             draggable = false;
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
-            // Every time startGame is called, a new timer is created. This is buggy.
-            // startGame();
-           // randomNumber = Math.random();
+            randomNumber = Math.random();
             if (0 <= randomNumber && randomNumber < 0.5) {
                 this.autoDrop();
             }
         }
+
         this.isActive = function () {
             return draggable;
-        };
+        }
 
 
         function _draw(x, y) {
@@ -105,20 +98,24 @@
         function paint(x, y) {
             ctx.fillStyle = color;
             ctx.fillRect(x, y, width, height);
-        };
+        }
 
         this.endGame = function () {
-            console.log('end game', timer);
+            clearTimer();
+        }
+
+        function clearTimer() {
             if (timer) {
                 clearInterval(timer);
                 timer = null;
             }
-        };
+        }
 
-    };
+    }
 
 
     function Circle() {
+        var randomNumber;
         var radius = 35;
         var color = "blue";
         var defaultX = 600;
@@ -128,65 +125,55 @@
         var height = 2 * radius;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
-        var _x = defaultX, _y = defaultY;
+        var _x = defaultX;
+        var _y = defaultY;
         var timer = null;
 
         paint(_x, _y);
 
-        var randomNumber = Math.random();
-
         this.autoDrop = function () {
-            // What if the timer is null?
-            // clearInterval(timer);
+            clearTimer();
             timer = setInterval(function () {
                 _draw(_x, _y + 1);
             }, 50);
+        }
 
-        };
         this.updateOnDrag = function (x, y) {
             if (draggable) {
                 _draw(x, y);
                 _x = x;
             }
+        }
 
-        };
-
-
-        this.onMouseDown = function (x, y) {
+        this.dragStart = function (x, y) {
             if (onTarget(x, y)) {
                 draggable = true;
-
             }
-        };
-        this.onMove = function (sx, sy) {
+        }
+
+        this.restoreOnMove = function (sx, sy) {
             paint(_x, _y);
-        };
+        }
 
         function onTarget(x, y) {
             return Math.sqrt((x - _x) * (x - _x) + (y - _y) * (y - _y)) <= radius;
-        };
+        }
 
         this.onScore = function () {
-            if (timer) {
-                clearInterval(timer);
-            }
+            clearTimer();
             draggable = false;
-
             _x = defaultX;
             _y = defaultY;
             paint(_x, _y);
-            // Every time startGame is called, a new timer is created. This is buggy.
-           // randomNumber = Math.random();
+            randomNumber = Math.random();
             if (randomNumber >= 0.5) {
                 this.autoDrop();
-                // startGame();
             }
-
-        };
+        }
 
         this.isActive = function () {
             return draggable;
-        };
+        }
 
         function _draw(x, y) {
             ctx.clearRect(_x - radius, _y - radius, width, height);
@@ -202,11 +189,15 @@
         }
 
         this.endGame = function () {
+            clearTimer();
+        }
+
+        function clearTimer() {
             if (timer) {
                 clearInterval(timer);
                 timer = null;
             }
-        };
+        }
     }
 
 
@@ -219,13 +210,14 @@
         var rightBoundaryWidth = 0;
         var leftBoundaryWidth = 45;
         var topBoundaryHeight = 20;
-        var bottomBoundaryHeight = 30;
+        var bottomBoundaryHeight = 10;
         var rotation = 0;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
         var width = 2 * radiusX;
         var height = 3.5 * radiusY;
         var score = 0;
+
         paint();
 
         this.getScore = function (sx, sy) {
@@ -236,21 +228,17 @@
                 updateScore(totalScore);
                 ctx.clearRect(x - radiusX, y - radiusY, width, height);
                 paint();
-
             }
-            ;
+        }
 
-        };
-
-        this.onMove = function (sx, sy) {
+        this.restoreOnMove = function (sx, sy) {
             paint();
-        };
+        }
 
         this.isOnScoreBoard = function (sx, sy) {
             return sx < x + rightBoundaryWidth && sx > x - leftBoundaryWidth &&
                 sy < y + bottomBoundaryHeight && sy > y - topBoundaryHeight;
-
-        };
+        }
 
         function paint() {
             var text = " " + score;
@@ -258,6 +246,7 @@
             var color = "black";
             var textX = 180;
             var textY = 370;
+
             ctx.beginPath();
             ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle);
             ctx.moveTo((x - radiusX), y);
@@ -270,7 +259,7 @@
             ctx.font = fontHeight + "px Arial";
             ctx.fillStyle = color;
             ctx.fillText(text, textX, textY);
-        };
+        }
     }
 
 
@@ -284,7 +273,9 @@
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
         var score = 0;
+
         paint();
+
         this.getScore = function (sx, sy) {
             if (this.isOnScoreBoard(sx, sy) && cirPiece.isActive()) {
                 score += 1;
@@ -293,23 +284,22 @@
                 cirPiece.onScore();
                 ctx.clearRect(x - radius, y - radius, width, height);
                 paint();
-
             }
-        };
+        }
 
-        this.onMove = function (sx, sy) {
+        this.restoreOnMove = function (sx, sy) {
             paint();
-        };
+        }
 
         this.isOnScoreBoard = function (sx, sy) {
             return Math.sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y)) < scoreRadius;
-        };
+        }
 
         function paint() {
             var text = " " + score;
             var fontHeight = 30;
             var color = "black";
-            var textX = 440;
+            var textX = 435;
             var textY = 370;
             ctx.beginPath();
             ctx.arc(x, y, radius, startAngle, endAngle);
@@ -319,62 +309,44 @@
             ctx.font = fontHeight + "px Arial";
             ctx.fillStyle = color;
             ctx.fillText(text, textX, textY);
-        };
-
+        }
     }
-
-    // function startGame() {
-    //
-    //     if (0 < randomNumber && randomNumber < 0.5) {
-    //         recPiece.autoDrop();
-    //
-    //     }
-    //     else {
-    //         cirPiece.autoDrop();
-    //
-    //     }
-    //
-    // };
 
     function myMove(e) {
         var mx = e.pageX - canvas.offsetLeft;
         var my = e.pageY - canvas.offsetTop;
-
 
         pieces.forEach(function (p) {
             p.updateOnDrag(mx, my)
         });
 
         containers.concat(pieces).forEach(function (c) {
-            c.onMove(mx, my)
+            c.restoreOnMove(mx, my)
         });
-
     }
-
 
     function myDown(e) {
         e.preventDefault();
         var newX = e.pageX - canvas.offsetLeft;
         var newY = e.pageY - canvas.offsetTop;
-        recPiece.onMouseDown(newX, newY);
-        cirPiece.onMouseDown(newX, newY);
 
-    };
-
+        pieces.forEach(function (dw) {
+            dw.dragStart(newX, newY)
+        });
+    }
 
     function myUp(e) {
         var cx = e.pageX - canvas.offsetLeft;
         var cy = e.pageY - canvas.offsetTop;
+
         containers.forEach(function (c) {
             c.getScore(cx, cy)
         });
-
-    };
+    }
 
     function updateScore(totalScore) {
         document.getElementById("scoreBoard").innerHTML = totalScore;
-    };
-
+    }
 
     function startTimer(duration, display) {
         var start = Date.now();
@@ -390,19 +362,18 @@
             diff = duration - (((Date.now() - start) / mileSecondFactor) | 0);
             minutes = parseInt(diff / minutesFactor);
             seconds = (diff % secondFactor) | 0;
-
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
-
             display.textContent = minutes + ":" + seconds;
+
             if (diff <= 0) {
                 clearInterval(clock);
                 canvas.removeEventListener("mousedown", myDown);
                 canvas.removeEventListener("mousemove", myMove);
                 canvas.removeEventListener("mouseup", myUp);
-                recPiece.endGame();
-                cirPiece.endGame();
-
+                pieces.forEach(function(p){
+                   p.endGame();
+                });
             }
         }
 
@@ -410,15 +381,14 @@
     }
 
     function gameStartfunction() {
-        // startGame();
-        //randomNumber = Math.random();
+        var oneMinutes = 30;
+        var display = document.querySelector('#time');
+
         canvas.addEventListener("mousedown", myDown, false);
         canvas.addEventListener("mousemove", myMove, false);
         canvas.addEventListener("mouseup", myUp, false);
-        var oneMinutes = 30;
-        var display = document.querySelector('#time');
         startTimer(oneMinutes, display);
-    };
+    }
 
 </script>
 </body>
