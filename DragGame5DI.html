@@ -15,112 +15,120 @@
 
 <canvas id="myCanvas" width="680px" height="500px">
 </canvas>
-<div>Time Remaining <span id="time"></span></div>
-<div>Total Score: <span id="scoreBoard"></span></div>
-<button onClick="gameStartfunction ()">Start</button>
+<div><b>Time Remaining: <span id="time"></span></b></div>
+<div><b>Total Score: <span id="scoreBoard"></span></b></div>
+<button onClick="gameStartfunction()" style="width:80px; height: 30px"><b>Start</b></button>
+
 <script>
     var canvas = document.getElementById("myCanvas");
-    canvas.addEventListener("mousedown", myDown, false);
-    canvas.addEventListener("mousemove", myMove, false);
-    canvas.addEventListener("mouseup", myUp, false);
-
     var ctx = canvas.getContext("2d");
     var totalScore = 0;
     var rectangleContainer = new RectangleContainer();
     var circleContainer = new CircleContainer();
     var recPiece = new Rectangle();
     var cirPiece = new Circle();
+    var pieces = [recPiece, cirPiece];
+    var containers = [rectangleContainer, circleContainer];
 
+    function Shape(config) {
+        var width = config.width;
+        var height = config.height;
+        var defaultX = config.defaultX;
+        var defaultY = config.defaultY;
+        var color = config.color;
 
-    // aop: cross-cutting concerns
-    function ShapeTimer(drawFn) {
-        console.log("drawFn", drawFn);
-        var _drawFn = drawFn;
-        this.start = function (x, y) {
-            this.timer = setInterval(function () {
-                console.log('autoDrop within timer');
-                _drawFn(x, y);
-            }, 50);
-        };
-        this.end = function () {
-            console.log("End timer", this.timer);
-            if (this.timer) {
-                clearInterval(this.timer);
-            }
-        };
-    }
-
-    function Rectangle() {
-        var width = 60;
-        var height = 60;
-        var color = "red";
-        var defaultX = 25;
-        var defaultY = 35;
-        var _x = defaultX, _y = defaultY;
+        var _x = defaultX;
+        var _y = defaultY;
         var draggable = false;
+        var timer = null;
 
-
-        paint(_x, _y);
+        config.paint(_x, _y);
 
         this.autoDrop = function () {
-            timer.start(_x, _y + 1)
+            clearTimer();
+            timer = setInterval(function () {
+                config.clear(_x, _y);
+                _y += 1;
+                config.paint(_x, _y);
+            }, 50);
         };
 
         this.updateOnDrag = function (x, y) {
             if (draggable) {
-                draw(x, y);
+                config.clear(_x, _y);
+                config.paint(x, y);
                 _x = x;
+                _y = y;
             }
-
         };
-        this.onMouseDown = function (x, y) {
-            if (onTarget(x, y)) {
+
+        this.dragStart = function (x, y) {
+            if (config.onTarget(x, y, _x, _y)) {
                 draggable = true;
             }
         };
 
-        this.onMove = function (sx, sy) {
-            paint(_x, _y);
-        };
-
-        function onTarget(x, y) {
-            return x < _x + width && x > _x && y < _y + height && y > _y;
+        this.restoreOnMove = function (sx, sy) {
+            config.paint(_x, _y);
         };
 
         this.onScore = function (x, y) {
-            timer.end();
+            clearTimer();
             draggable = false;
             _x = defaultX;
             _y = defaultY;
-            paint(_x, _y);
-            startGame();
+            config.paint(_x, _y);
+            var randomNumber = Math.random();
+            if (0 <= randomNumber && randomNumber < 0.5) {
+                this.autoDrop();
+            }
         };
 
         this.isActive = function () {
             return draggable;
         };
-
-
-        this.draw = function (x, y) {
-            ctx.clearRect(_x, _y, width, height);
-            paint(x, y);
-            _y = y;
-        }
-
-        function paint(x, y) {
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, width, height);
-        };
-
         this.endGame = function () {
-            timer.end();
+            clearTimer();
         };
 
+        function clearTimer() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+        }
+    }
 
-        console.log("rectangle")
-        var timer = new ShapeTimer(this.draw);
-    };
+    function CloneObject(shape, obj) {
+        for (key in shape) {
+            var value = shape[key];
+            obj[key] = shape[key];
+        }
+        return obj;
+    }
 
+    function Rectangle() {
+        var config = {
+            width: 60,
+            height: 60,
+            color: "red",
+            defaultX: 25,
+            defaultY: 35
+        };
+        config.paint = function (x, y) {
+            ctx.fillStyle = config.color;
+            ctx.fillRect(x, y, config.width, config.height);
+        };
+        config.clear = function (x, y) {
+            ctx.clearRect(x, y, config.width, config.height);
+        };
+        config.onTarget = function (x, y, _x, _y) {
+            return x < _x + config.width && x > _x && y < _y + config.height && y > _y;
+        };
+
+        var shape = new Shape(config);
+        CloneObject(shape, this);
+    }
 
     function Circle() {
         var radius = 35;
@@ -132,69 +140,28 @@
         var height = 2 * radius;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
-        var _x = defaultX, _y = defaultY;
-        paint(_x, _y);
 
-        this.autoDrop = function () {
-            timer.start(_x, _y + 1)
+        var config = {
+            width: width,
+            height: height,
+            color: color,
+            defaultX: defaultX,
+            defaultY: defaultY
         };
-        this.updateOnDrag = function (x, y) {
-            if (draggable) {
-                draw(x, y);
-                _x = x;
-            }
-
-        };
-
-        this.isActive = function () {
-            return draggable;
-        };
-
-
-        this.onMouseDown = function (x, y) {
-            if (onTarget(x, y)) {
-                draggable = true;
-
-            }
-        };
-        this.onMove = function (sx, sy) {
-            paint(_x, _y);
-        };
-
-        function onTarget(x, y) {
-            return Math.sqrt((x - _x) * (x - _x) + (y - _y) * (y - _y)) <= radius;
-        };
-
-        this.onScore = function () {
-            timer.end();
-            draggable = false;
-
-            _x = defaultX;
-            _y = defaultY;
-            paint(_x, _y);
-            startGame();
-
-        };
-
-        this.draw = function (x, y) {
-            ctx.clearRect(_x - radius, _y - radius, width, height);
-            paint(x, y);
-            _y = y;
-        };
-
-        function paint(x, y) {
+        config.paint = function (x, y) {
             ctx.beginPath();
             ctx.arc(x, y, radius, startAngle, endAngle);
             ctx.fillStyle = color;
             ctx.fill();
-        };
-
-        this.endGame = function () {
-            timer.end();
-        };
-        console.log("circle")
-        var timer = new ShapeTimer(this.draw);
-
+        }
+        config.clear = function (x, y) {
+            ctx.clearRect(x - radius, y - radius, width, height);
+        }
+        config.onTarget = function (x, y, _x, _y) {
+            return Math.sqrt((x - _x) * (x - _x) + (y - _y) * (y - _y)) <= radius;
+        }
+        var shape = new Shape(config);
+        CloneObject(shape, this);
     }
 
 
@@ -204,13 +171,17 @@
         var radiusX = 60;
         var radiusY = 30;
         var h = 70;
-        var boundaryWidth = 40;
+        var rightBoundaryWidth = 0;
+        var leftBoundaryWidth = 45;
+        var topBoundaryHeight = 20;
+        var bottomBoundaryHeight = 10;
         var rotation = 0;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
         var width = 2 * radiusX;
         var height = 3.5 * radiusY;
         var score = 0;
+
         paint();
 
         this.getScore = function (sx, sy) {
@@ -219,19 +190,19 @@
                 score += 1;
                 totalScore += 1;
                 updateScore(totalScore);
-                ctx.clearRect(x - radiusX, y - radiusY, width, height)
+                ctx.clearRect(x - radiusX, y - radiusY, width, height);
+                paint();
             }
-            ;
+        }
 
-        };
-
-        this.onMove = function (sx, sy) {
+        this.restoreOnMove = function (sx, sy) {
             paint();
-        };
+        }
 
         this.isOnScoreBoard = function (sx, sy) {
-            return sx < x + boundaryWidth && sx > x - boundaryWidth && sy < y + boundaryWidth && sy > y - boundaryWidth;
-        };
+            return sx < x + rightBoundaryWidth && sx > x - leftBoundaryWidth &&
+                sy < y + bottomBoundaryHeight && sy > y - topBoundaryHeight;
+        }
 
         function paint() {
             var text = " " + score;
@@ -239,6 +210,7 @@
             var color = "black";
             var textX = 180;
             var textY = 370;
+
             ctx.beginPath();
             ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle);
             ctx.moveTo((x - radiusX), y);
@@ -251,7 +223,7 @@
             ctx.font = fontHeight + "px Arial";
             ctx.fillStyle = color;
             ctx.fillText(text, textX, textY);
-        };
+        }
     }
 
 
@@ -259,12 +231,15 @@
         var x = 450;
         var y = 370;
         var radius = 50;
+        var scoreRadius = 10;
         var width = 2 * radius;
         var height = 2 * radius;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
         var score = 0;
+
         paint();
+
         this.getScore = function (sx, sy) {
             if (this.isOnScoreBoard(sx, sy) && cirPiece.isActive()) {
                 score += 1;
@@ -272,23 +247,23 @@
                 updateScore(totalScore);
                 cirPiece.onScore();
                 ctx.clearRect(x - radius, y - radius, width, height);
-
+                paint();
             }
-        };
+        }
 
-        this.onMove = function (sx, sy) {
+        this.restoreOnMove = function (sx, sy) {
             paint();
-        };
+        }
 
         this.isOnScoreBoard = function (sx, sy) {
-            return sx < x + radius && sx > x - radius && sy < y + radius && sy > y - radius;
-        };
+            return Math.sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y)) < scoreRadius;
+        }
 
         function paint() {
             var text = " " + score;
             var fontHeight = 30;
             var color = "black";
-            var textX = 440;
+            var textX = 435;
             var textY = 370;
             ctx.beginPath();
             ctx.arc(x, y, radius, startAngle, endAngle);
@@ -298,65 +273,44 @@
             ctx.font = fontHeight + "px Arial";
             ctx.fillStyle = color;
             ctx.fillText(text, textX, textY);
-        };
-
+        }
     }
-
-    function startGame() {
-
-        var randomNumber = Math.random();
-        if (0 < randomNumber && randomNumber < 0.5) {
-            recPiece.autoDrop();
-
-        }
-        else {
-            cirPiece.autoDrop();
-
-        }
-
-    };
 
     function myMove(e) {
         var mx = e.pageX - canvas.offsetLeft;
         var my = e.pageY - canvas.offsetTop;
 
-
-        var pieces = [recPiece, cirPiece];
-        var container = [rectangleContainer, circleContainer];
-
-
         pieces.forEach(function (p) {
             p.updateOnDrag(mx, my)
         });
 
-        container.concat(pieces).forEach(function (c) {
-            c.onMove(mx, my)
+        containers.concat(pieces).forEach(function (c) {
+            c.restoreOnMove(mx, my)
         });
-
     }
-
 
     function myDown(e) {
         e.preventDefault();
         var newX = e.pageX - canvas.offsetLeft;
         var newY = e.pageY - canvas.offsetTop;
-        recPiece.onMouseDown(newX, newY);
-        cirPiece.onMouseDown(newX, newY);
 
-    };
-
+        pieces.forEach(function (dw) {
+            dw.dragStart(newX, newY)
+        });
+    }
 
     function myUp(e) {
         var cx = e.pageX - canvas.offsetLeft;
         var cy = e.pageY - canvas.offsetTop;
-        rectangleContainer.getScore(cx, cy);
-        circleContainer.getScore(cx, cy);
-    };
+
+        containers.forEach(function (c) {
+            c.getScore(cx, cy)
+        });
+    }
 
     function updateScore(totalScore) {
         document.getElementById("scoreBoard").innerHTML = totalScore;
-    };
-
+    }
 
     function startTimer(duration, display) {
         var start = Date.now();
@@ -372,21 +326,18 @@
             diff = duration - (((Date.now() - start) / mileSecondFactor) | 0);
             minutes = parseInt(diff / minutesFactor);
             seconds = (diff % secondFactor) | 0;
-
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
-
             display.textContent = minutes + ":" + seconds;
+
             if (diff <= 0) {
                 clearInterval(clock);
-                //addEventListerner and removeEventListener need at leasr two parameters, how to us foreach function?
                 canvas.removeEventListener("mousedown", myDown);
                 canvas.removeEventListener("mousemove", myMove);
                 canvas.removeEventListener("mouseup", myUp);
-                //endGame can't clear interval
-                recPiece.endGame();
-                cirPiece.endGame();
-
+                pieces.forEach(function (p) {
+                    p.endGame();
+                });
             }
         }
 
@@ -394,11 +345,14 @@
     }
 
     function gameStartfunction() {
-        startGame();
-        var oneMinutes = 15;
+        var oneMinutes = 30;
         var display = document.querySelector('#time');
+
+        canvas.addEventListener("mousedown", myDown, false);
+        canvas.addEventListener("mousemove", myMove, false);
+        canvas.addEventListener("mouseup", myUp, false);
         startTimer(oneMinutes, display);
-    };
+    }
 
 </script>
 </body>
