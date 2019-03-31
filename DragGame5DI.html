@@ -132,30 +132,25 @@
 
     function Circle() {
         var radius = 35;
-        var color = "blue";
-        var defaultX = 600;
-        var defaultY = 60;
+        var config = {
+            width: 2 * radius,
+            height: 2 * radius,
+            color: "blue",
+            defaultX: 600,
+            defaultY: 60
+        };
         var draggable = false;
-        var width = 2 * radius;
-        var height = 2 * radius;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
 
-        var config = {
-            width: width,
-            height: height,
-            color: color,
-            defaultX: defaultX,
-            defaultY: defaultY
-        };
         config.paint = function (x, y) {
             ctx.beginPath();
             ctx.arc(x, y, radius, startAngle, endAngle);
-            ctx.fillStyle = color;
+            ctx.fillStyle = config.color;
             ctx.fill();
         }
         config.clear = function (x, y) {
-            ctx.clearRect(x - radius, y - radius, width, height);
+            ctx.clearRect(x - radius, y - radius, config.width, config.height);
         }
         config.onTarget = function (x, y, _x, _y) {
             return Math.sqrt((x - _x) * (x - _x) + (y - _y) * (y - _y)) <= radius;
