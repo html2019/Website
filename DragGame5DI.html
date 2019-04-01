@@ -31,12 +31,9 @@
     var containers = [rectangleContainer, circleContainer];
 
     function Shape(config) {
-        var width = config.width;
-        var height = config.height;
+
         var defaultX = config.defaultX;
         var defaultY = config.defaultY;
-        var color = config.color;
-
         var _x = defaultX;
         var _y = defaultY;
         var draggable = false;
@@ -99,13 +96,11 @@
         }
     }
 
-    function CloneObject(shape, obj) {
-        for (key in shape) {
-            //var value = shape[key];
-            obj[key] = shape[key];
+    function CloneObject(origianlObj, obj) {
+        for (key in origianlObj) {
+            obj[key] = origianlObj[key];
         }
         return obj;
-        console.log("obj", obj);
     }
 
     function Rectangle() {
@@ -140,7 +135,6 @@
             defaultX: 600,
             defaultY: 60
         };
-        var draggable = false;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
 
@@ -162,28 +156,11 @@
 
 
 function ShapeContainer(config) {
-	
-        var x=config.x;
-        var y=config.y;
-        var width=config.width;
-        var height=config.height;
-        var startAngle=config.startAngle;
-        var endAngle=config.endAngle;
-        var score=config.score;
-    
 
 		config.paint();
 		this.restoreOnMove = function (sx, sy) {
             config.paint();
         }
-
-        function CloneObject(shapeContainer, obj) {
-        for (key in shapeContainer) {
-            //var value = shape[key];
-            obj[key] = shapeContainer[key];
-        }
-        return obj;
-    }
 
 }
 
@@ -200,23 +177,12 @@ function ShapeContainer(config) {
             endAngle:2 * Math.PI,
             score: 0,
     	};
-    	 //var x = 200;
-        //var y = 350;
-        //var radiusX = 60;
-        //var radiusY = 30;
         var h = 70;
         var rightBoundaryWidth = 0;
         var leftBoundaryWidth = 45;
         var topBoundaryHeight = 20;
         var bottomBoundaryHeight = 10;
         var rotation = 0;
-        //var startAngle = 0;
-        //var endAngle = 2 * Math.PI;
-        //var width = 2 * radiusX;
-        //var height = 3.5 * radiusY;
-        //var score = 0;
-
-        //paint();
 
         this.getScore = function (sx, sy) {
             if (this.isOnScoreBoard(sx, sy) && recPiece.isActive()) {
@@ -229,10 +195,6 @@ function ShapeContainer(config) {
             }
         }
 
-
-        /*this.restoreOnMove = function (sx, sy) {
-               paint();
-        }*/
 
         this.isOnScoreBoard = function (sx, sy) {
             return sx < config.x + rightBoundaryWidth && sx > config.x - leftBoundaryWidth &&
@@ -276,17 +238,8 @@ function ShapeContainer(config) {
             endAngle:  2 * Math.PI,
             score:  0,
     	};
-        //var x = 450;
-        //var y = 370;
-        //var radius = 50;
-        var scoreRadius = 10;
-        //var width = 2 * radius;
-        //var height = 2 * radius;
-        //var startAngle = 0;
-        //var endAngle = 2 * Math.PI;
-        //var score = 0;
 
-        //paint();
+        var scoreRadius = 10;
 
         this.getScore = function (sx, sy) {
             if (this.isOnScoreBoard(sx, sy) && cirPiece.isActive()) {
@@ -298,11 +251,6 @@ function ShapeContainer(config) {
                 config.paint();
             }
         }
-
-  
-        /*this.restoreOnMove = function (sx, sy) {
-            paint();
-        }*/
 
         this.isOnScoreBoard = function (sx, sy) {
             return Math.sqrt((sx - config.x) * (sx - config.x) + (sy - config.y) * (sy - config.y)) < scoreRadius;
