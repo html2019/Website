@@ -34,47 +34,47 @@
 
         var defaultX = config.defaultX;
         var defaultY = config.defaultY;
-        var _x = defaultX;
-        var _y = defaultY;
+        var oldX = defaultX;
+        var oldY = defaultY;
         var draggable = false;
         var timer = null;
 
-        config.paint(_x, _y);
+        config.paint(oldX, oldY);
 
         this.autoDrop = function () {
             clearTimer();
             timer = setInterval(function () {
-                config.clear(_x, _y);
-                _y += 1;
-                config.paint(_x, _y);
+                config.clear(oldX, oldY);
+                oldY += 1;
+                config.paint(oldX, oldY);
             }, 50);
         };
 
         this.updateOnDrag = function (x, y) {
             if (draggable) {
-                config.clear(_x, _y);
+                config.clear(oldX, oldY);
                 config.paint(x, y);
-                _x = x;
-                _y = y;
+                oldX = x;
+                oldY = y;
             }
         };
 
         this.dragStart = function (x, y) {
-            if (config.onTarget(x, y, _x, _y)) {
+            if (config.onTarget(x, y, oldX, oldY)) {
                 draggable = true;
             }
         };
 
         this.restoreOnMove = function (sx, sy) {
-            config.paint(_x, _y);
+            config.paint(oldX, oldY);
         };
 
         this.onScore = function (x, y) {
             clearTimer();
             draggable = false;
-            _x = defaultX;
-            _y = defaultY;
-            config.paint(_x, _y);
+            oldX = defaultX;
+            oldY = defaultY;
+            config.paint(oldX, oldY);
             var randomNumber = Math.random();
             if (0 <= randomNumber && randomNumber < 0.5) {
                 this.autoDrop();
@@ -111,15 +111,18 @@
             defaultX: 25,
             defaultY: 35
         };
+
         config.paint = function (x, y) {
             ctx.fillStyle = config.color;
             ctx.fillRect(x, y, config.width, config.height);
         };
+
         config.clear = function (x, y) {
             ctx.clearRect(x, y, config.width, config.height);
         };
-        config.onTarget = function (x, y, _x, _y) {
-            return x < _x + config.width && x > _x && y < _y + config.height && y > _y;
+
+        config.onTarget = function (x, y, oldX, oldY) {
+            return x < oldX + config.width && x > oldX && y < oldY + config.height && y > oldY;
         };
 
         var shape = new Shape(config);
@@ -128,6 +131,8 @@
 
     function Circle() {
         var radius = 35;
+        var startAngle = 0;
+        var endAngle = 2 * Math.PI;
         var config = {
             width: 2 * radius,
             height: 2 * radius,
@@ -135,8 +140,6 @@
             defaultX: 600,
             defaultY: 60
         };
-        var startAngle = 0;
-        var endAngle = 2 * Math.PI;
 
         config.paint = function (x, y) {
             ctx.beginPath();
@@ -144,64 +147,70 @@
             ctx.fillStyle = config.color;
             ctx.fill();
         }
+
         config.clear = function (x, y) {
             ctx.clearRect(x - radius, y - radius, config.width, config.height);
         }
-        config.onTarget = function (x, y, _x, _y) {
-            return Math.sqrt((x - _x) * (x - _x) + (y - _y) * (y - _y)) <= radius;
+
+        config.onTarget = function (x, y, oldX, oldY) {
+            return Math.sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY)) <= radius;
         }
+
         var shape = new Shape(config);
         CloneObject(shape, this);
     }
 
 
-function ShapeContainer(config) {
+    function ShapeContainer(config) {
 
-		config.paint();
-		this.restoreOnMove = function (sx, sy) {
+        config.paint();
+
+        this.restoreOnMove = function (sx, sy) {
             config.paint();
         }
 
-}
+        this.getScore = function (sx, sy) {
+            if (config.isOnScoreBoard(sx, sy)) {
+                config.score += 1;
+                totalScore += 1;
+                updateScore(totalScore);
+                config.onScoreAndClear();
+                config.paint();
+            }
+        }
 
+    }
 
     function RectangleContainer() {
-    	var radiusX = 60;
+        var radiusX = 60;
         var radiusY = 30;
-        var config= {
-        	x: 200,
-        	y: 350,
-        	width: 2 * radiusX,
-            height: 3.5 * radiusY,
-            startAngle: 0,
-            endAngle:2 * Math.PI,
-            score: 0,
-    	};
         var h = 70;
         var rightBoundaryWidth = 0;
         var leftBoundaryWidth = 45;
         var topBoundaryHeight = 20;
         var bottomBoundaryHeight = 10;
         var rotation = 0;
+        var config = {
+            x: 200,
+            y: 350,
+            width: 2 * radiusX,
+            height: 3.5 * radiusY,
+            startAngle: 0,
+            endAngle: 2 * Math.PI,
+            score: 0,
+        };
 
-        this.getScore = function (sx, sy) {
-            if (this.isOnScoreBoard(sx, sy) && recPiece.isActive()) {
-                config.score += 1;
-                totalScore += 1;
-                updateScore(totalScore);
-                recPiece.onScore();
-                ctx.clearRect(config.x - radiusX, config.y - radiusY, config.width, config.height);
-                config.paint();
-            }
-        }
-
-
-        this.isOnScoreBoard = function (sx, sy) {
+        config.isOnScoreBoard = function (sx, sy) {
             return sx < config.x + rightBoundaryWidth && sx > config.x - leftBoundaryWidth &&
-                sy < config.y + bottomBoundaryHeight && sy > config.y - topBoundaryHeight;
+                sy < config.y + bottomBoundaryHeight && sy > config.y - topBoundaryHeight && recPiece.isActive();
         }
 
-            config.paint=function() {
+        config.onScoreAndClear = function () {
+            recPiece.onScore();
+            ctx.clearRect(config.x - radiusX, config.y - radiusY, config.width, config.height);
+        }
+
+        config.paint = function () {
             var text = " " + config.score;
             var fontHeight = 30;
             var color = "black";
@@ -226,37 +235,30 @@ function ShapeContainer(config) {
         CloneObject(shapeContainer, this);
     }
 
-
     function CircleContainer() {
-    	var radius = 50;
-    	var config= {
-        	x: 450,
-        	y: 370,
-        	width: 2 * radius,
+        var radius = 50;
+        var scoreRadius = 10;
+        var config = {
+            x: 450,
+            y: 370,
+            width: 2 * radius,
             height: 2 * radius,
             startAngle: 0,
-            endAngle:  2 * Math.PI,
-            score:  0,
-    	};
+            endAngle: 2 * Math.PI,
+            score: 0,
+        };
 
-        var scoreRadius = 10;
-
-        this.getScore = function (sx, sy) {
-            if (this.isOnScoreBoard(sx, sy) && cirPiece.isActive()) {
-                config.score += 1;
-                totalScore += 1;
-                updateScore(totalScore);
-                cirPiece.onScore();
-                ctx.clearRect(config.x - radius, config.y - radius, config.width, config.height);
-                config.paint();
-            }
+        config.isOnScoreBoard = function (sx, sy) {
+            return Math.sqrt((sx - config.x) * (sx - config.x) + (sy - config.y) * (sy - config.y)) < scoreRadius &&
+                cirPiece.isActive();
         }
 
-        this.isOnScoreBoard = function (sx, sy) {
-            return Math.sqrt((sx - config.x) * (sx - config.x) + (sy - config.y) * (sy - config.y)) < scoreRadius;
+        config.onScoreAndClear = function () {
+            cirPiece.onScore();
+            ctx.clearRect(config.x - radius, config.y - radius, config.width, config.height);
         }
 
-            config.paint=function() {
+        config.paint = function () {
             var text = " " + config.score;
             var fontHeight = 30;
             var color = "black";

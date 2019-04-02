@@ -37,24 +37,24 @@
         var color = "red";
         var defaultX = 25;
         var defaultY = 35;
-        var _x = defaultX;
-        var _y = defaultY;
+        var oldX = defaultX;
+        var oldY = defaultY;
         var draggable = false;
         var timer = null;
 
-        paint(_x, _y);
+        paint(oldX, oldY);
 
         this.autoDrop = function () {
             clearTimer();
             timer = setInterval(function () {
-                _draw(_x, _y + 1);
+                _draw(oldX, oldY + 1);
             }, 50);
         }
 
         this.updateOnDrag = function (x, y) {
             if (draggable) {
                 _draw(x, y);
-                _x = x;
+                oldX = x;
             }
         }
 
@@ -65,19 +65,19 @@
         }
 
         this.restoreOnMove = function (sx, sy) {
-            paint(_x, _y);
+            paint(oldX, oldY);
         }
 
         function onTarget(x, y) {
-            return x < _x + width && x > _x && y < _y + height && y > _y;
+            return x < oldX + width && x > oldX && y < oldY + height && y > oldY;
         }
 
         this.onScore = function (x, y) {
             clearTimer();
             draggable = false;
-            _x = defaultX;
-            _y = defaultY;
-            paint(_x, _y);
+            oldX = defaultX;
+            oldY = defaultY;
+            paint(oldX, oldY);
             randomNumber = Math.random();
             if (0 <= randomNumber && randomNumber < 0.5) {
                 this.autoDrop();
@@ -90,9 +90,9 @@
 
 
         function _draw(x, y) {
-            ctx.clearRect(_x, _y, width, height);
+            ctx.clearRect(oldX, oldY, width, height);
             paint(x, y);
-            _y = y;
+            oldY = y;
         }
 
         function paint(x, y) {
@@ -125,23 +125,23 @@
         var height = 2 * radius;
         var startAngle = 0;
         var endAngle = 2 * Math.PI;
-        var _x = defaultX;
-        var _y = defaultY;
+        var oldX = defaultX;
+        var oldY = defaultY;
         var timer = null;
 
-        paint(_x, _y);
+        paint(oldX, oldY);
 
         this.autoDrop = function () {
             clearTimer();
             timer = setInterval(function () {
-                _draw(_x, _y + 1);
+                _draw(oldX, oldY + 1);
             }, 50);
         }
 
         this.updateOnDrag = function (x, y) {
             if (draggable) {
                 _draw(x, y);
-                _x = x;
+                oldX = x;
             }
         }
 
@@ -152,19 +152,19 @@
         }
 
         this.restoreOnMove = function (sx, sy) {
-            paint(_x, _y);
+            paint(oldX, oldY);
         }
 
         function onTarget(x, y) {
-            return Math.sqrt((x - _x) * (x - _x) + (y - _y) * (y - _y)) <= radius;
+            return Math.sqrt((x - oldX) * (x - oldX) + (y - oldY) * (y - oldY)) <= radius;
         }
 
         this.onScore = function () {
             clearTimer();
             draggable = false;
-            _x = defaultX;
-            _y = defaultY;
-            paint(_x, _y);
+            oldX = defaultX;
+            oldY = defaultY;
+            paint(oldX, oldY);
             randomNumber = Math.random();
             if (randomNumber >= 0.5) {
                 this.autoDrop();
@@ -176,9 +176,9 @@
         }
 
         function _draw(x, y) {
-            ctx.clearRect(_x - radius, _y - radius, width, height);
+            ctx.clearRect(oldX - radius, oldY - radius, width, height);
             paint(x, y);
-            _y = y;
+            oldY = y;
         }
 
         function paint(x, y) {
@@ -371,8 +371,8 @@
                 canvas.removeEventListener("mousedown", myDown);
                 canvas.removeEventListener("mousemove", myMove);
                 canvas.removeEventListener("mouseup", myUp);
-                pieces.forEach(function(p){
-                   p.endGame();
+                pieces.forEach(function (p) {
+                    p.endGame();
                 });
             }
         }
