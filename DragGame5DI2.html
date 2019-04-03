@@ -24,7 +24,6 @@
 <script>
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
-    var totalScore = 0;
     var rectangleContainer = new RectangleContainer();
     var circleContainer = new CircleContainer();
     var recPiece = new Rectangle();
@@ -33,15 +32,13 @@
     var containers = [rectangleContainer, circleContainer];
 
     function myMove(e) {
-        var mx = e.pageX - canvas.offsetLeft;
-        var my = e.pageY - canvas.offsetTop;
-
-        pieces.forEach(function (p) {
-            p.updateOnDrag(mx, my)
-        });
-
-        containers.concat(pieces).forEach(function (c) {
-            c.restoreOnMove(mx, my)
+        onMouseMovement(e, function (newX, newY) {
+            pieces.forEach(function (p) {
+                p.updateOnDrag(newX, newY)
+            });
+            containers.concat(pieces).forEach(function (c) {
+                c.restoreOnMove(newX, newY)
+            });
         });
     }
 
@@ -64,8 +61,12 @@
         });
     }
 
-    function updateScore(totalScore) {
-        document.getElementById("scoreBoard").innerHTML = totalScore;
+    function onMouseMovement(event, callbackFn) {
+        event.preventDefault();
+
+        var newX = event.pageX - canvas.offsetLeft;
+        var newY = event.pageY - canvas.offsetTop;
+        callbackFn(newX, newY);
     }
 
     function startTimer(duration, display) {
