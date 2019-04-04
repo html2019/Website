@@ -221,6 +221,7 @@
 
         paint();
 
+        // why this function is still here while ShapeContainer already has one?
         var updateScore = function () {
             document.getElementById("scoreBoard").innerHTML = rectangleContainer.outScore + circleContainer.outScore;
         }
