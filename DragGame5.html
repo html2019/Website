@@ -22,7 +22,6 @@
 <script>
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
-    var totalScore = 0;
     var rectangleContainer = new RectangleContainer();
     var circleContainer = new CircleContainer();
     var recPiece = new Rectangle();
@@ -218,16 +217,22 @@
         var height = 3.5 * radiusY;
         var score = 0;
 
+        this.outScore = 0;
+
         paint();
+
+        var updateScore = function () {
+            document.getElementById("scoreBoard").innerHTML = rectangleContainer.outScore + circleContainer.outScore;
+        }
 
         this.getScore = function (sx, sy) {
             if (this.isOnScoreBoard(sx, sy) && recPiece.isActive()) {
                 recPiece.onScore(sx, sy);
                 score += 1;
-                totalScore += 1;
-                updateScore(totalScore);
                 ctx.clearRect(x - radiusX, y - radiusY, width, height);
                 paint();
+                this.outScore = score;
+                updateScore();
             }
         }
 
@@ -274,16 +279,22 @@
         var endAngle = 2 * Math.PI;
         var score = 0;
 
+        this.outScore = 0;
+
         paint();
+
+        var updateScore = function () {
+            document.getElementById("scoreBoard").innerHTML = rectangleContainer.outScore + circleContainer.outScore;
+        }
 
         this.getScore = function (sx, sy) {
             if (this.isOnScoreBoard(sx, sy) && cirPiece.isActive()) {
                 score += 1;
-                totalScore += 1;
-                updateScore(totalScore);
                 cirPiece.onScore();
                 ctx.clearRect(x - radius, y - radius, width, height);
                 paint();
+                this.outScore = score;
+                updateScore();
             }
         }
 
@@ -313,39 +324,38 @@
     }
 
     function myMove(e) {
-        var mx = e.pageX - canvas.offsetLeft;
-        var my = e.pageY - canvas.offsetTop;
-
-        pieces.forEach(function (p) {
-            p.updateOnDrag(mx, my)
-        });
-
-        containers.concat(pieces).forEach(function (c) {
-            c.restoreOnMove(mx, my)
+        onMouseMovement(e, function (newX, newY) {
+            pieces.forEach(function (p) {
+                p.updateOnDrag(newX, newY)
+            });
+            containers.concat(pieces).forEach(function (c) {
+                c.restoreOnMove(newX, newY)
+            });
         });
     }
 
     function myDown(e) {
-        e.preventDefault();
-        var newX = e.pageX - canvas.offsetLeft;
-        var newY = e.pageY - canvas.offsetTop;
-
-        pieces.forEach(function (dw) {
-            dw.dragStart(newX, newY)
+        onMouseMovement(e, function (newX, newY) {
+            pieces.forEach(function (dw) {
+                dw.dragStart(newX, newY)
+            });
         });
     }
 
     function myUp(e) {
-        var cx = e.pageX - canvas.offsetLeft;
-        var cy = e.pageY - canvas.offsetTop;
-
-        containers.forEach(function (c) {
-            c.getScore(cx, cy)
+        onMouseMovement(e, function (newX, newY) {
+            containers.forEach(function (c) {
+                c.getScore(newX, newY)
+            });
         });
     }
 
-    function updateScore(totalScore) {
-        document.getElementById("scoreBoard").innerHTML = totalScore;
+    function onMouseMovement(event, callbackFn) {
+        event.preventDefault();
+
+        var newX = event.pageX - canvas.offsetLeft;
+        var newY = event.pageY - canvas.offsetTop;
+        callbackFn(newX, newY);
     }
 
     function startTimer(duration, display) {

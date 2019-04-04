@@ -43,21 +43,18 @@
     }
 
     function myDown(e) {
-        e.preventDefault();
-        var newX = e.pageX - canvas.offsetLeft;
-        var newY = e.pageY - canvas.offsetTop;
-
-        pieces.forEach(function (dw) {
-            dw.dragStart(newX, newY)
+        onMouseMovement(e, function (newX, newY) {
+            pieces.forEach(function (dw) {
+                dw.dragStart(newX, newY)
+            });
         });
     }
 
     function myUp(e) {
-        var cx = e.pageX - canvas.offsetLeft;
-        var cy = e.pageY - canvas.offsetTop;
-
-        containers.forEach(function (c) {
-            c.getScore(cx, cy)
+        onMouseMovement(e, function (newX, newY) {
+            containers.forEach(function (c) {
+                c.getScore(newX, newY)
+            });
         });
     }
 
